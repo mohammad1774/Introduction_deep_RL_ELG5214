@@ -1,0 +1,8 @@
+ENV INFORMATION
+Generated at: 2026-01-21 22:58:50
+OS: Windows 10 (10.0.26200)
+Python Version: 3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]
+PyTorch Version: 2.5.1+cu121
+CUDA Available: True
+CUDA Version: 12.1
+GPU Name: NVIDIA GeForce RTX 5060 Laptop GPU
