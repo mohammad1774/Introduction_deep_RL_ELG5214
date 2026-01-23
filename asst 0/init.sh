@@ -48,3 +48,6 @@ else
     exit 1
 fi 
 
+echo "--> Creating Output folders of Logs and Visualizations"
+mkdir -p "$LOG_DIR"
+mkdir -p "$VIZ_DIR"

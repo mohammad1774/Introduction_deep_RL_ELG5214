@@ -1,0 +1,19 @@
+seeds: [1,2,3,4,5]
+
+device: cuda 
+
+reproducibility: 
+  deterministic: true 
+
+data: 
+  data_dir: ./data 
+  batch_size: 128 
+  normalize: true 
+
+
+train:
+  epochs: 3
+  lr: 0.01
+  optimizer: adam 
+  checkpoint_path: ./Model_Checkpoints/
+  logs_path: ./logs
