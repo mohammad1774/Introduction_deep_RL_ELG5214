@@ -8,7 +8,6 @@ from datetime import datetime
 import platform 
 import sys 
 import pandas as pd
-
 import numpy as np 
 import yaml 
 import torch 
@@ -17,10 +16,10 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
-
 import matplotlib.pyplot as plt
-
 from typing import Dict, List 
+
+
 
 class MLP(nn.Module):
     def __init__(self):
@@ -37,6 +36,7 @@ class MLP(nn.Module):
     def forward(self, x):
         return self.net(x)
     
+
 class MetricsDataset:
     """
     Collects metrics data per iteration or epoch and exports them as a DataFrame.
@@ -93,6 +93,7 @@ class MetricsDataset:
 
         return {"iteration": path_iter, "epoch": path_epoch}
 
+
 def load_config(path: str="config.yaml") -> Dict:
     if not os.path.exists(path):
         raise FileNotFoundError(f"Missing {path}. Please add the config.yaml file")
@@ -103,12 +104,12 @@ def load_config(path: str="config.yaml") -> Dict:
         raise ValueError("config.yaml must parse into a dictionary")
     return cfg 
 
+
 def set_global_seed(seed: int, deterministic: bool=True) -> None:
     random.seed(seed)
     os.environ["PYTHONHASHSEED"] = str(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
-
 
 
 def setup_logger(run_id: int, path: str):
@@ -224,6 +225,7 @@ def main(config,seed,met_df):
     logger.info(f"Saving the final model checkpoints with seed : {seed} at location: {checkpoint_path}/run{seed}_final.pt")
 
     return met_df
+
 
 class learning_curves:
     """

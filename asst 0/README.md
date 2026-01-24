@@ -10,6 +10,14 @@ reproducibility analysis.
    - Run `init.sh` (PowerShell: `bash init.sh`) 
    This file is something which was not required for the assignment , but this will give a seamless experience.
    This script downloads the libraries using the requirements.txt and creates the required folders and checks for the required files.
+  Expected outputs:
+    - environment_info.txt, this is a file which documents the OS, GPU, Cuda Version, PyTorch Version 
+      *Note: The exact version of PyTorch along with CUDA Wheel version is accordance with my laptop's GPU. So, there is an uncertainty for 
+      the users GPU CUDA Version, if there is some indiscrepancy then GPU will be "N/A" and CPU will be used as the training device.
+    - logs folder and logs files from runs.
+    - metrics folder containing the Assignment0_metric_dataset csv files.
+    - Model_Checkpoints Folder with the weight of different runs of model training.
+    - viz folder with the generated plots for the learning curves.
 2) Train and generate files of Logs, Checkpoints, Metric Dataset, Plots:
    - Run `python repro_check.py`
 
