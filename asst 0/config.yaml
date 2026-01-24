@@ -2,6 +2,8 @@ seeds: [1,2,3,4,5]
 
 device: cuda 
 
+metric_path: ./viz/
+
 reproducibility: 
   deterministic: true 
 

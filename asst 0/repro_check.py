@@ -91,7 +91,7 @@ class MetricsDataset:
         df.to_csv(path_iter, index=False)
         epoch_df.to_csv(path_epoch, index=False)
 
-        return "datasets created"
+        return {"iteration": path_iter, "epoch": path_epoch}
 
 def load_config(path: str="config.yaml") -> Dict:
     if not os.path.exists(path):
@@ -154,7 +154,7 @@ def main(config,seed,met_df):
 
     train_loader = DataLoader(
         train_dataset,
-        batch_size = 128,
+        batch_size = 1024,
         shuffle = True 
     )
 
@@ -225,6 +225,108 @@ def main(config,seed,met_df):
 
     return met_df
 
+class learning_curves:
+    """
+    This python class will help us build various learning curves with the metrics dataset created. 
+
+    It is expected for the dataset to have the following columns: seed, epoch, iteration, total_iterations, accuracy, loss
+    """
+    def __init__(self, file_path: str):
+        print(file_path)
+        self.df = pd.read_csv(file_path)
+
+    def mean_std_dev(self, output_path):
+        n_runs = self.df["Seed"].nunique()
+
+        metrics = ["Loss", "Accuracy"]
+
+        fig, axes = plt.subplots(1,2,figsize=(12,4))
+        for i,metric in enumerate(metrics):
+            stats = (
+                self.df.groupby("Iteration")[metric]
+                .agg(["mean","std"])
+                .reset_index()
+            )
+
+            x = stats["Iteration"]
+
+            ax = axes[i]
+            ax.plot(x,stats["mean"], label="Mean Loss")
+            ax.fill_between(
+                x,
+                stats["mean"] - stats["std"],
+                stats["mean"] + stats["std"],
+                alpha=0.3,
+                label = "+- 1 SD"
+            )
+
+            ax.set_title(f"Mean +- SD - {metric}")
+            ax.set_xlabel("Iteration")
+            ax.set_ylabel(f"Training {metric}")
+            ax.legend()
+            ax.grid(True, alpha=0.3)
+
+        plt.tight_layout()
+        plt.savefig(f"{output_path}/mean_sd.png",dpi = 2000)
+        plt.show()
+    
+    def mean_se_dev(self, output_path):
+        n_runs = self.df["Seed"].nunique()
+
+        metrics = ["Loss", "Accuracy"]
+
+        fig, axes = plt.subplots(1,2,figsize=(12,4))
+        for i,metric in enumerate(metrics):
+            stats = (
+                self.df.groupby("Iteration")[metric]
+                .agg(["mean","std"])
+                .reset_index()
+            )
+            stats["ste"] = stats["std"] / (n_runs ** 0.5)
+
+            x = stats["Iteration"]
+
+            ax = axes[i]
+            ax.plot(x,stats["mean"], label="Mean Loss")
+            ax.fill_between(
+                x,
+                stats["mean"] - stats["ste"],
+                stats["mean"] + stats["ste"],
+                alpha=0.3,
+                label = "+- 1 SE"
+            )
+
+            ax.set_title(f"Mean +- SE - {metric}")
+            ax.set_xlabel("Iteration")
+            ax.set_ylabel(f"Training {metric}")
+            ax.legend()
+            ax.grid(True, alpha=0.3)
+
+        plt.tight_layout()
+        plt.savefig(f"{output_path}/mean_se.png",dpi = 2000)
+        plt.show()
+    
+    def all_curves(self,output_path):
+        plt.figure(figsize = (7,4))
+        n_runs = self.df["Seed"].nunique()
+
+        for seed, dfr in self.df.groupby("Seed"):
+            dfr = dfr.sort_values("Iteration")
+            plt.plot(dfr["Iteration"], dfr["Accuracy"], label=f"Seed {seed}")
+        
+        plt.xlabel("Iteration")
+        plt.ylabel("Training Accuracy (%)")
+        plt.title("All Individual Learning Curves (Accuracy)")
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+
+        plt.tight_layout()
+        plt.savefig(f"{output_path}/all_runs_accuracy.png", dpi=200)
+        plt.show()
+
+
+        
+
 if __name__ == "__main__":
     config = load_config()
     print(config)
@@ -233,4 +335,12 @@ if __name__ == "__main__":
         print(seed)
         set_global_seed(seed)
         met_df = main(config, seed , met_df)
-    met_df.save()
+    file_locs = met_df.save()
+
+    plot = learning_curves(file_locs["iteration"])
+    print("The Mean +- Standard Deviation Graphs for the training and Loss.")
+    plot.mean_std_dev(config['metric_path'])
+    print("The Mean +- Standard Error Graphs for the training and Loss.")
+    plot.mean_se_dev(config['metric_path'])
+    print("All runs super imposed Graphs for the training and Loss.")
+    plot.all_curves(config['metric_path'])
