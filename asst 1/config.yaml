@@ -1,0 +1,21 @@
+seeds: [42]
+batch_size: [64,256,1024]
+
+data:
+  test_size: 0.1
+  val_size: 0.1
+  random_state: 42
+
+model:
+  hidden1: 256
+  hidden2: 128
+
+train:
+  epochs: 10
+  batch_size: 1024
+  lr: 0.01
+  logs_path: logs
+  checkpoint_path: checkpoints
+  metrics_out_dir: metrics
+
+metric_path: plots
