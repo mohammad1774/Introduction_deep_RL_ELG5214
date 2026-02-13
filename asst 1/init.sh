@@ -2,10 +2,16 @@
 
 set -euo pipefail
 
-VENV_DIR=".venv"
+LIBS=$1
+
+VENV_DIR="dl_env"
 REQ_FILE="requirements.txt"
 CONFIG_FILE="config.yaml"
-PY_SCRIPT="main.py"
+
+JAX_TRAIN_SCRIPT="jax_train"
+TORCH_TRAIN_SCRIPT="pytorch_train"
+VIZ_SCRIPT="viz_script"
+
 
 LOG_DIR="logs"
 VIZ_DIR="viz"
@@ -15,7 +21,12 @@ echo "==> Initialising Environment"
 
 if [ ! -d "$VENV_DIR" ]; then 
     echo "==> Creating Virtual Environment : $VENV_DIR"
-    python -m venv "$VENV_DIR"
+    sudo apt update
+    sudo apt install -y software-properties-common
+    sudo add-apt-repository -y universe
+    sudo apt update
+    sudo apt install -y python3-venv    
+    python3 -m venv "$VENV_DIR"
 else
     echo "==> Virtual Env already exists: $VENV_DIR"
 fi 
@@ -30,22 +41,40 @@ else
     exit 1
 fi 
 
+
 echo "###################################################################"
 
 echo "==> Checking for requirements.txt file "
 
-if [ -f "$REQ_FILE" ]; then 
-    echo "###################################################################"
-    echo "==> uprading pip"
-    python -m pip install --upgrade pip 
-    echo "==> installing dependencies from "
-    pip install -r "$REQ_FILE"
-    echo "###################################################################"
-else 
-    echo "Warning: $REQ_FILE not found."
+if [ "$LIBS" = true ]; then
+    if [ -f "$REQ_FILE" ]; then 
+        echo "###################################################################"
+        echo "==> uprading pip"
+        python -m pip install --upgrade pip 
+        sudo apt update
+        sudo apt install -y software-properties-common
+        sudo add-apt-repository -y universe
+        sudo apt update
+        sudo apt install -y python3-venv
+
+        echo "==> installing dependencies from "
+        
+        pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
+        pip install torch==2.10.0+cu128 torchvision==0.25.0+cu128 torchaudio==2.10.0+cu128 --index-url https://download.pytorch.org/whl/cu128
+
+        pip install -r "$REQ_FILE"
+        echo "###################################################################"
+    else 
+        echo "Warning: $REQ_FILE not found."
+    fi 
+else
+    echo "Skipping Dependency Installation (libs=false)"
 fi 
 
-
+echo "###################################################################"
+echo "-> Testing the Target device of JAX"
+python3 -c "import jax; print(jax.devices()); print(jax.default_backend())"
+echo "###################################################################"
 
 
 
@@ -55,14 +84,39 @@ mkdir -p "$VIZ_DIR"
 echo "###################################################################"
 
 
-if [ -f "$PY_SCRIPT" ]; then 
+if [ -f "src/${JAX_TRAIN_SCRIPT}.py" ]; then 
     echo "###################################################################"
-    echo "==> Running the Main Training Script."
-    python "$PY_SCRIPT"
+    echo "==> Running the JAX Training Script."
+    python3 -m "src.${JAX_TRAIN_SCRIPT}"
     echo "###################################################################"
 else
-    echo "Please add the repro_check Script $PY_SCRIPT"
+    echo "Please add the JAX train script in folder src with Script $JAX_TRAIN_SCRIPT"
     exit 1
     echo "###################################################################"
 
 fi 
+
+if [ -f "src/${TORCH_TRAIN_SCRIPT}.py" ]; then 
+    echo "###################################################################"
+    echo "==> Running the PyTorch Training Script."
+    python3 -m "src.${TORCH_TRAIN_SCRIPT}"
+    echo "###################################################################"
+else
+    echo "Please add the PyTorch train script in folder src with Script $TORCH_TRAIN_SCRIPT"
+    exit 1
+    echo "###################################################################"
+
+fi 
+
+if [ -f "src/${VIZ_SCRIPT}.py" ]; then 
+    echo "###################################################################"
+    echo "==> Running the PyTorch Training Script."
+    python3 -m "src.${VIZ_SCRIPT}"
+    echo "###################################################################"
+else
+    echo "Please add the PyTorch train script in folder src with Script $VIZ_SCRIPT"
+    exit 1
+    echo "###################################################################"
+
+fi 
+

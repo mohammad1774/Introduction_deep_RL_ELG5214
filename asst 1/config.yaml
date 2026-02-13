@@ -11,10 +11,11 @@ model:
   hidden2: 128
 
 train:
-  epochs: 10
-  batch_size: 1024
+  epochs: 3
+  #batch_size: 1024
   lr: 0.01
-  logs_path: logs
+  logs_path: logs/jax_logs
+  logs_path_torch: logs/pytorch_logs
   checkpoint_path: checkpoints
   metrics_out_dir: metrics
 

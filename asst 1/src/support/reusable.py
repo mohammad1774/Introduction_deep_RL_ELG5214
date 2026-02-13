@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import yaml
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 import jax 
 import jax.numpy as jnp 
@@ -37,7 +38,7 @@ class MetricsDataset:
                 "Accuracy": accuracy,
                 "Iteration": iteration,
                 "Total_iter": total_iter,
-                "Validation_Acc": val_acc,
+                #"Validation_Acc": val_acc,
                 "Batch_Size": bs
 
             })
@@ -98,3 +99,209 @@ def save_run_summary_row(out_csv: str, row: Dict,):
         df.to_csv(out_csv, model="a", header=False, index=False)
     else:
         df.to_csv(out_csv, mode="w", header=True, index=False)
+
+class LearningCurvesComparer:
+    """
+    Expected Columns (Iteration Level df)
+    - Iteration (int)
+    - Seed (int)
+    - bs (int) 
+    - framework (str)  # "jax" or "torch"
+    - Loss (float)
+    - Accuracy (float)
+
+    Expected columns (epoch-level df) for epoch time plots (if available):
+      - Epoch (int)
+      - epoch_time_s (float) 
+        - First Epoch Time
+        - Steady Epoch Time #In our case the second epoch time
+      - Seed, bs, framework
+    """
+
+    def __init__(self, iter_csv_paths: dict, epoch_csv_paths: dict | None = None):
+        """
+        iter_csv_paths: {"jax": "path/to/jax_iter.csv", "torch": "path/to/torch_iter.csv"}
+        epoch_csv_paths: {"jax": "path/to/jax_epoch.csv", "torch": "path/to/torch_epoch.csv"} 
+        """
+        self.iter_df = self._load_and_tag(iter_csv_paths)
+        self.epoch_df = self._load_and_tag(epoch_csv_paths) if epoch_csv_paths else None
+
+
+    def _load_and_tag(self,paths: dict) -> pd.DataFrame:
+        dfs = []
+        for fw, p in paths.items():
+            df = pd.read_csv(p)
+            df["framework"] = fw 
+            dfs.append(df)
+            
+        return pd.concat(dfs, ignore_index=True)
+
+
+    def _stats_mean_band(
+            self,
+            df: pd.DataFrame,
+            x_col: str,
+            y_col: str,
+            group_cols: list[str],
+            band: str = "sd",
+    ) -> pd.DataFrame:
+        """ 
+        This is helper function which will calculate the mean standard error 
+        mean standard deviation for each pair of X column and Y column, 
+        which are chosen by us while calling this function
+        """
+
+        stats = (
+            df.groupby(group_cols + [x_col])[y_col]
+            .agg(["mean", "std","count"])
+            .reset_index()
+            .sort_values(group_cols+ [x_col])
+        )
+
+        if band == "se":
+            stats["band"] = stats["std"] / np.sqrt(stats["count"].clip(lower=1))
+        else:
+            stats["band"] = stats["std"]
+        return stats 
+    
+    def _plot_mean_band(
+            self,
+            df: pd.DataFrame,
+            x_col: str,
+            y_col: str,
+            group_cols: list[str],
+            title: str,
+            out_path: str,
+            band: str="sd",
+    ): 
+        os.makedirs(os.path.dirname(out_path), exist_ok=True)
+        
+        stats = self._stats_mean_band(df, x_col, y_col, group_cols, band=band)
+
+        fig, ax = plt.subplots(figsize=(8,4))
+        for key, g in stats.groupby(group_cols):
+            if not isinstance(key, tuple):
+                key = (key,)
+            label = "|".join([f"{c}={v}" for c,v in zip(group_cols, key)])
+
+            ax.plot(g[x_col],g["mean"], label=label)
+            ax.fill_between(g[x_col],g["mean"]-g["band"], g["mean"]+g["band"],alpha=0.25)
+        
+        ax.set_title(title + (" (Mean ± SD)" if band == "sd" else " (Mean ± SE)"))
+        ax.set_xlabel(x_col)
+        ax.set_ylabel(y_col)
+        ax.grid(True, alpha=0.3)
+        ax.legend(fontsize=8)
+        plt.tight_layout()
+        plt.savefig(out_path, dpi=200)
+        plt.close(fig)
+
+    def _plot_all_curves(
+            self,
+            df: pd.DataFrame,
+            x_col: str,
+            y_col: str,
+            group_cols: list[str],
+            title: str,
+            out_path: str,
+            max_legend: int=20,
+    ):
+        
+        os.makedirs(os.path.dirname(out_path), exist_ok=True)
+
+        fig, ax = plt.subplots(figsize=(10,10))
+        for i , (key,g) in enumerate(df.groupby(group_cols)):
+            g = g.sort_values(x_col)
+            if not isinstance(key, tuple):
+                key = (key,)
+            label = " | ".join([f"{c} = {v}" for c,v in zip(group_cols,key)])
+            ax.plot(g[x_col],g[y_col],label=label)
+
+        ax.set_title(title)
+        ax.set_xlabel(x_col)
+        ax.set_ylabel(y_col)
+        ax.grid(True, alpha=0.3)
+
+        # Avoid giant legends
+        handles, labels = ax.get_legend_handles_labels()
+        if len(labels) <= max_legend:
+            ax.legend(fontsize=7, ncol=2)
+        plt.tight_layout()
+        plt.savefig(out_path, dpi=200)
+        plt.close(fig)
+
+    def plot_iteration_vs_col(self,framework: str, metric: str, ref_col: str,out_dir: str):
+        """  
+        Each Iteration Metric value vs The seed for each framework 
+
+        Metric : "Loss" OR "Accuracy" 
+        Framework: "JAX" or "PyTorch"
+        """
+        df = self.iter_df[self.iter_df["framework"] == framework].copy()
+
+        self._plot_all_curves(
+            df = df,
+            x_col = "Iteration",
+            y_col = metric,
+            group_cols=[ref_col],
+            title=f"{framework.upper()} | {metric} vs Iteration (per {ref_col})",
+            out_path=os.path.join(out_dir, f"{framework}_iter_vs_seed_{metric.lower()}_all.png"),
+        )
+
+        self._plot_mean_band(
+            df= df,
+            x_col="Iteration",
+            y_col=metric,
+            group_cols = [ref_col],
+            title=f"{framework.upper()} | {metric} vs Iteration groupbed by {ref_col}",
+            out_path=os.path.join(out_dir, f"{framework}_iter_vs_{ref_col}_{metric.lower()}_mean_sd.png"),
+            band="sd"
+        )
+
+        self._plot_mean_band(
+            df=df,
+            x_col="Iteration",
+            y_col=metric,
+            group_cols=[ref_col],
+            title=f"{framework.upper()} | {metric} vs Iteration grouped by {ref_col}",
+            out_path=os.path.join(out_dir, f"{framework}_iter_vs_{ref_col}_{metric.lower()}_mean_se.png"),
+            band="se",
+        )
+
+def epoch_time_comparison(summary_csv: str="results/summary.csv", output_dir: str="viz"):
+    df = pd.read_csv(summary_csv)
+
+    # normalize column name
+    if "steady_epoch_time_s" not in df.columns and "steady_epoch_time" in df.columns:
+        df = df.rename(columns={"steady_epoch_time": "steady_epoch_time_s"})
+
+    # wide -> long
+    df_long = df.melt(
+        id_vars=["framework", "batch_size"],
+        value_vars=["first_epoch_time_s", "steady_epoch_time_s"],
+        var_name="epoch_type",
+        value_name="time_s"
+    )
+
+    df_long["epoch_type"] = df_long["epoch_type"].map({
+        "first_epoch_time_s": "first_epoch_time",
+        "steady_epoch_time_s": "steady_epoch_time",
+    })
+
+    # combined hue key
+    df_long["fw_bs"] = df_long["framework"] + "_bs" + df_long["batch_size"].astype(str)
+
+    plt.figure(figsize=(8, 4))
+    sns.barplot(
+        data=df_long,
+        x="epoch_type",
+        y="time_s",
+        hue="fw_bs"
+    )
+
+    plt.ylabel("Training Time (seconds)")
+    plt.title("First vs Steady Epoch Time (JAX vs PyTorch)")
+    plt.grid(axis="y", alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(f"{output_dir}/first_vs_steady_jax_vs_torch.png", dpi=200)
+    plt.show()
