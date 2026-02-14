@@ -305,3 +305,28 @@ def epoch_time_comparison(summary_csv: str="results/summary.csv", output_dir: st
     plt.tight_layout()
     plt.savefig(f"{output_dir}/first_vs_steady_jax_vs_torch.png", dpi=200)
     plt.show()
+
+def framework_vs_final_acc(summary_csv: str="results/summary.csv", output_dir: str="viz"):
+    df = pd.read_csv(summary_csv)
+
+    df["batch_size"] = df["batch_size"].astype(int)
+    df["final_test_acc"] = pd.to_numeric(df["final_test_acc"], errors="coerce")
+
+    # if accuracies stored as 0-1, convert to %
+    if df["final_test_acc"].max() <= 1.0:
+        df["final_test_acc"] = 100.0 * df["final_test_acc"]
+
+    plt.figure(figsize=(7, 4))
+    sns.barplot(
+    data=df,
+    x="batch_size",
+    y="final_test_acc",
+    hue="framework"
+    )
+    plt.xlabel("Batch Size")
+    plt.ylabel("Final Test Accuracy (%)")
+    plt.title("Final Test Accuracy vs Batch Size (JAX vs PyTorch)")
+    plt.grid(axis="y", alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(f"{output_dir}/final_test_acc_jax_vs_torch.png", dpi=200)
+    plt.show()

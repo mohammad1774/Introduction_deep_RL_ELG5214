@@ -225,6 +225,7 @@ def main(config, seed, met_df, batch_size: int):
         "first_epoch_time_s": epoch_times[0],
         "steady_epoch_time_s": epoch_times[1] if len(epoch_times) >= 2 else None,
         "final_test_acc": test_acc,
+        "final_training_acc": epoch_acc*100
     })
 
     return met_df
