@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep RL Learning Challenges</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --border: #1e1e2e;
+    --accent: #00ffc8;
+    --accent2: #7c3aed;
+    --accent3: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --done: #10b981;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid noise texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(0,255,200,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,200,0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 48px;
+  }
+
+  .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 1rem;
+    font-weight: 400;
+    max-width: 520px;
+    line-height: 1.6;
+  }
+
+  /* Progress bar */
+  .progress-section {
+    margin-bottom: 40px;
+    padding: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .progress-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .progress-count {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 100px;
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    width: 0%;
+  }
+
+  .xp-display {
+    margin-top: 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent3);
+    letter-spacing: 1px;
+  }
+
+  /* Phase sections */
+  .phase {
+    margin-bottom: 32px;
+  }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .phase-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    border: 1px solid;
+  }
+
+  .phase-1 .phase-badge { color: #4ade80; border-color: #4ade80; background: rgba(74,222,128,0.08); }
+  .phase-2 .phase-badge { color: var(--accent); border-color: var(--accent); background: rgba(0,255,200,0.08); }
+  .phase-3 .phase-badge { color: #f472b6; border-color: #f472b6; background: rgba(244,114,182,0.08); }
+  .phase-4 .phase-badge { color: var(--accent3); border-color: var(--accent3); background: rgba(245,158,11,0.08); }
+
+  .phase-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  /* Challenge cards */
+  .challenge {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .challenge::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+
+  .challenge:hover {
+    border-color: rgba(0,255,200,0.2);
+    transform: translateX(4px);
+  }
+
+  .challenge:hover::before {
+    background: var(--accent);
+  }
+
+  .challenge.completed {
+    opacity: 0.65;
+  }
+
+  .challenge.completed::before {
+    background: var(--done);
+  }
+
+  .challenge.completed .challenge-title {
+    text-decoration: line-through;
+    color: var(--muted);
+  }
+
+  .checkbox {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-size: 13px;
+  }
+
+  .challenge.completed .checkbox {
+    background: var(--done);
+    border-color: var(--done);
+  }
+
+  .challenge-content { flex: 1; }
+
+  .challenge-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+
+  .challenge-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    transition: color 0.2s;
+  }
+
+  .xp-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--accent3);
+    background: rgba(245,158,11,0.1);
+    border: 1px solid rgba(245,158,11,0.2);
+    padding: 2px 8px;
+    border-radius: 100px;
+    letter-spacing: 1px;
+  }
+
+  .type-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    padding: 2px 8px;
+    border-radius: 100px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .type-concept { color: #818cf8; background: rgba(129,140,248,0.1); }
+  .type-code { color: var(--accent); background: rgba(0,255,200,0.08); }
+  .type-math { color: #f472b6; background: rgba(244,114,182,0.08); }
+  .type-project { color: var(--accent3); background: rgba(245,158,11,0.08); }
+
+  .challenge-desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* Expand panel */
+  .challenge-detail {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .challenge-detail.open {
+    max-height: 400px;
+  }
+
+  .detail-inner {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .detail-inner h4 {
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 8px;
+  }
+
+  .detail-inner ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .detail-inner ul li {
+    font-size: 0.82rem;
+    color: var(--muted);
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .detail-inner ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 10px;
+    top: 2px;
+  }
+
+  .toggle-hint {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 4px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* Reset */
+  .reset-btn {
+    display: block;
+    margin: 40px auto 0;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 10px 24px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .reset-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Celebration */
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0,255,200,0); }
+    50% { box-shadow: 0 0 24px 4px rgba(0,255,200,0.15); }
+  }
+
+  .challenge.just-done {
+    animation: pulse-glow 0.6s ease;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="tag">// Learning Path</div>
+    <h1>Deep Reinforcement<br>Learning Challenges</h1>
+    <p class="subtitle">Structured challenges for absolute beginners. Check off each one as you complete it — concepts build on each other.</p>
+  </div>
+
+  <div class="progress-section">
+    <div class="progress-header">
+      <span class="progress-label">Overall Progress</span>
+      <span class="progress-count" id="progressCount">0 / 20</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="xp-display" id="xpDisplay">⚡ 0 XP earned</div>
+  </div>
+
+  <div id="challenges-root"></div>
+
+  <button class="reset-btn" onclick="resetAll()">↺ Reset All Progress</button>
+</div>
+
+<script>
+const phases = [
+  {
+    id: 1,
+    label: "Phase 1",
+    title: "Foundations",
+    challenges: [
+      {
+        id: "c1", title: "Understand what RL actually is", type: "concept", xp: 50,
+        desc: "Learn the core RL loop: Agent → Action → Environment → Reward → Observation.",
+        steps: ["Watch the 3Blue1Brown video on RL basics", "Read the first chapter of Sutton & Barto (free online)", "Be able to explain: agent, environment, state, action, reward in your own words"]
+      },
+      {
+        id: "c2", title: "Build intuition with a toy example", type: "concept", xp: 50,
+        desc: "Think through the classic multi-armed bandit problem by hand.",
+        steps: ["Imagine 3 slot machines with unknown payouts", "Define what 'exploration vs exploitation' means here", "Write down a simple greedy strategy and a random strategy"]
+      },
+      {
+        id: "c3", title: "Install your RL toolkit", type: "code", xp: 75,
+        desc: "Set up Python, Gymnasium (formerly OpenAI Gym), and PyTorch.",
+        steps: ["Install Python 3.10+, pip install gymnasium torch numpy", "Run: import gymnasium as gym; env = gym.make('CartPole-v1')", "Confirm you can see env.observation_space and env.action_space"]
+      },
+      {
+        id: "c4", title: "Run a random agent", type: "code", xp: 100,
+        desc: "Write 10 lines of code that plays CartPole with random actions.",
+        steps: ["Loop: env.reset() → env.step(env.action_space.sample())", "Print total reward per episode", "Understand why a random agent scores low (~20 steps)"]
+      },
+      {
+        id: "c5", title: "Master Markov Decision Processes (MDP)", type: "math", xp: 75,
+        desc: "MDPs are the mathematical framework behind all of RL.",
+        steps: ["Define the 5-tuple: (S, A, P, R, γ)", "Understand why the Markov property matters", "Draw an MDP diagram for a simple 3x3 grid world"]
+      },
+    ]
+  },
+  {
+    id: 2,
+    label: "Phase 2",
+    title: "Classic RL Algorithms",
+    challenges: [
+      {
+        id: "c6", title: "Understand the Bellman equation", type: "math", xp: 100,
+        desc: "The Bellman equation is the backbone of almost all RL algorithms.",
+        steps: ["Write out: V(s) = max_a [R(s,a) + γ · V(s')]", "Compute V by hand for a 2-state MDP", "Explain what the discount factor γ controls"]
+      },
+      {
+        id: "c7", title: "Implement Value Iteration", type: "code", xp: 125,
+        desc: "Build Value Iteration from scratch on a grid world.",
+        steps: ["Define a 4x4 grid with a goal and a hole", "Iterate: update V(s) using the Bellman backup", "Extract the optimal policy from the value function"]
+      },
+      {
+        id: "c8", title: "Code Q-learning from scratch", type: "code", xp: 150,
+        desc: "Tabular Q-learning on the FrozenLake environment.",
+        steps: ["Initialize Q-table as zeros", "Implement the update: Q(s,a) ← Q(s,a) + α[r + γ max Q(s',·) − Q(s,a)]", "Run 10,000 episodes and watch success rate improve"]
+      },
+      {
+        id: "c9", title: "Understand ε-greedy exploration", type: "concept", xp: 75,
+        desc: "Learn how agents balance trying new things vs. exploiting known rewards.",
+        steps: ["Implement ε-greedy action selection", "Plot reward curves for ε = 0.0, 0.1, 0.5", "Add ε decay and observe the effect"]
+      },
+      {
+        id: "c10", title: "Solve CartPole with Q-learning", type: "project", xp: 200,
+        desc: "Discretize the CartPole state space and train a Q-learning agent.",
+        steps: ["Bin continuous observations into discrete buckets", "Train until average reward > 195 over 100 episodes", "Plot the learning curve"]
+      },
+    ]
+  },
+  {
+    id: 3,
+    label: "Phase 3",
+    title: "Deep RL Begins",
+    challenges: [
+      {
+        id: "c11", title: "Learn why tables don't scale", type: "concept", xp: 75,
+        desc: "Understand why tabular methods fail on Atari and continuous problems.",
+        steps: ["Count states in CartPole (continuous) vs FrozenLake (discrete)", "Research the 'curse of dimensionality'", "Articulate what function approximation solves"]
+      },
+      {
+        id: "c12", title: "Build a neural network Q-function", type: "code", xp: 150,
+        desc: "Replace the Q-table with a small PyTorch neural network.",
+        steps: ["Define a 2-layer MLP: input=state_size, output=n_actions", "Forward pass: state → Q-values for all actions", "Pick action = argmax of outputs"]
+      },
+      {
+        id: "c13", title: "Implement DQN on CartPole", type: "project", xp: 250,
+        desc: "Build a working Deep Q-Network — the algorithm that cracked Atari.",
+        steps: ["Add experience replay buffer (store transitions, sample randomly)", "Add a target network (copy weights every N steps)", "Train until CartPole is consistently solved (>195 reward)"]
+      },
+      {
+        id: "c14", title: "Understand Policy Gradient intuition", type: "concept", xp: 100,
+        desc: "A totally different family of RL algorithms — optimize the policy directly.",
+        steps: ["Understand: increase probability of actions that led to high reward", "Read the REINFORCE algorithm derivation (just the idea, not the full math)", "Compare value-based vs. policy-based approaches"]
+      },
+      {
+        id: "c15", title: "Implement REINFORCE", type: "code", xp: 200,
+        desc: "The simplest policy gradient algorithm — Monte Carlo policy optimization.",
+        steps: ["Collect full episode trajectories", "Compute discounted returns G_t for each step", "Update policy network: maximize log π(a|s) · G_t"]
+      },
+    ]
+  },
+  {
+    id: 4,
+    label: "Phase 4",
+    title: "Modern Deep RL",
+    challenges: [
+      {
+        id: "c16", title: "Understand Actor-Critic architecture", type: "concept", xp: 125,
+        desc: "Combine value and policy methods — the foundation of modern RL.",
+        steps: ["Define Actor (policy network) and Critic (value network)", "Understand: Critic reduces variance of policy gradient updates", "Draw the architecture diagram with two networks"]
+      },
+      {
+        id: "c17", title: "Implement A2C on LunarLander", type: "project", xp: 300,
+        desc: "Advantage Actor-Critic — the stepping stone to PPO.",
+        steps: ["Use LunarLander-v2 environment (requires pip install box2d-py)", "Implement advantage: A(s,a) = r + γV(s') − V(s)", "Train and record a video of your agent landing"]
+      },
+      {
+        id: "c18", title: "Study PPO (Proximal Policy Optimization)", type: "concept", xp: 150,
+        desc: "PPO is the go-to algorithm for most modern RL applications.",
+        steps: ["Read the PPO paper abstract and introduction", "Understand the clipped surrogate objective", "Identify why PPO is more stable than vanilla policy gradient"]
+      },
+      {
+        id: "c19", title: "Use Stable-Baselines3 to train an agent", type: "code", xp: 175,
+        desc: "Use a production-grade RL library and evaluate your agent.",
+        steps: ["pip install stable-baselines3", "Train PPO on LunarLander: model = PPO('MlpPolicy', env)", "Evaluate with mean_reward, std_reward = evaluate_policy(model, env)"]
+      },
+      {
+        id: "c20", title: "Capstone: Beat a challenging environment", type: "project", xp: 500,
+        desc: "Train an agent to consistently solve BipedalWalker or HalfCheetah. Document your process.",
+        steps: ["Choose: BipedalWalker-v3 (harder) or Hopper-v4 (moderate)", "Tune hyperparameters: learning rate, clip range, batch size", "Write a 1-page 'training log' documenting what worked and why"]
+      },
+    ]
+  }
+];
+
+// Load state
+let completed = new Set(JSON.parse(localStorage.getItem('drl_completed') || '[]'));
+
+function saveState() {
+  localStorage.setItem('drl_completed', JSON.stringify([...completed]));
+}
+
+function getXP() {
+  let total = 0;
+  phases.forEach(p => p.challenges.forEach(c => {
+    if (completed.has(c.id)) total += c.xp;
+  }));
+  return total;
+}
+
+function getTotalXP() {
+  let total = 0;
+  phases.forEach(p => p.challenges.forEach(c => total += c.xp));
+  return total;
+}
+
+function updateProgress() {
+  const total = phases.reduce((a, p) => a + p.challenges.length, 0);
+  const done = completed.size;
+  const pct = (done / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressCount').textContent = `${done} / ${total}`;
+  document.getElementById('xpDisplay').textContent = `⚡ ${getXP().toLocaleString()} / ${getTotalXP().toLocaleString()} XP earned`;
+}
+
+let openCard = null;
+
+function toggleChallenge(id) {
+  const detail = document.getElementById('detail-' + id);
+  if (!detail) return;
+  if (openCard && openCard !== id) {
+    const prev = document.getElementById('detail-' + openCard);
+    if (prev) prev.classList.remove('open');
+  }
+  const isOpen = detail.classList.contains('open');
+  detail.classList.toggle('open', !isOpen);
+  openCard = isOpen ? null : id;
+}
+
+function markDone(event, id) {
+  event.stopPropagation();
+  const card = document.getElementById('card-' + id);
+  if (completed.has(id)) {
+    completed.delete(id);
+    card.classList.remove('completed');
+  } else {
+    completed.add(id);
+    card.classList.add('completed');
+    card.classList.add('just-done');
+    setTimeout(() => card.classList.remove('just-done'), 700);
+  }
+  saveState();
+  updateProgress();
+}
+
+function resetAll() {
+  if (!confirm('Reset all progress?')) return;
+  completed.clear();
+  saveState();
+  render();
+}
+
+function typeClass(t) {
+  return {concept:'type-concept', code:'type-code', math:'type-math', project:'type-project'}[t] || '';
+}
+
+function render() {
+  const root = document.getElementById('challenges-root');
+  root.innerHTML = '';
+
+  phases.forEach(phase => {
+    const phaseEl = document.createElement('div');
+    phaseEl.className = `phase phase-${phase.id}`;
+    phaseEl.innerHTML = `
+      <div class="phase-header">
+        <span class="phase-badge">${phase.label}</span>
+        <span class="phase-title">${phase.title}</span>
+      </div>
+    `;
+
+    phase.challenges.forEach(c => {
+      const isDone = completed.has(c.id);
+      const card = document.createElement('div');
+      card.className = 'challenge' + (isDone ? ' completed' : '');
+      card.id = 'card-' + c.id;
+      card.onclick = () => toggleChallenge(c.id);
+
+      card.innerHTML = `
+        <div class="checkbox" onclick="markDone(event, '${c.id}')">${isDone ? '✓' : ''}</div>
+        <div class="challenge-content">
+          <div class="challenge-top">
+            <span class="challenge-title">${c.title}</span>
+            <span class="type-badge ${typeClass(c.type)}">${c.type}</span>
+            <span class="xp-badge">+${c.xp} XP</span>
+          </div>
+          <div class="challenge-desc">${c.desc}</div>
+          <div class="toggle-hint">↓ click to expand steps</div>
+          <div class="challenge-detail" id="detail-${c.id}">
+            <div class="detail-inner">
+              <h4>How to complete it</h4>
+              <ul>${c.steps.map(s => `<li>${s}</li>`).join('')}</ul>
+            </div>
+          </div>
+        </div>
+      `;
+
+      phaseEl.appendChild(card);
+    });
+
+    root.appendChild(phaseEl);
+  });
+
+  updateProgress();
+}
+
+render();
+</script>
+</body>
+</html>

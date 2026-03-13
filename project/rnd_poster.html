@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RND Exploration Poster</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0d14;
+    --surface: #111520;
+    --card: #161b28;
+    --accent1: #00e5ff;
+    --accent2: #ff6b35;
+    --accent3: #7fff6a;
+    --text: #e8eaf2;
+    --muted: #8892a4;
+    --border: rgba(0,229,255,0.15);
+    --glow: rgba(0,229,255,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    line-height: 1.55;
+    min-height: 100vh;
+    padding: 24px;
+    background-image:
+      radial-gradient(ellipse 60% 40% at 15% 10%, rgba(0,229,255,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 85% 80%, rgba(255,107,53,0.05) 0%, transparent 60%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.02) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.02) 40px);
+  }
+
+  .poster {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    gap: 14px;
+  }
+
+  /* HEADER */
+  .header {
+    border: 1px solid var(--accent1);
+    background: linear-gradient(135deg, #0d1422 0%, #111c2e 100%);
+    padding: 32px 40px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2), var(--accent3));
+  }
+  .header::after {
+    content: 'RND';
+    position: absolute;
+    right: 30px; top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Space Mono', monospace;
+    font-size: 120px;
+    font-weight: 700;
+    color: rgba(0,229,255,0.04);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -6px;
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--accent1);
+    border: 1px solid var(--accent1);
+    padding: 3px 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    line-height: 1.15;
+    color: #fff;
+    max-width: 700px;
+    margin-bottom: 10px;
+  }
+  .header h1 em {
+    color: var(--accent1);
+    font-style: italic;
+  }
+
+  .authors {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 12px;
+  }
+  .authors span { color: var(--accent3); }
+
+  /* GRID LAYOUT */
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .grid-2-1 {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 14px;
+  }
+  .grid-1-2 {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 14px;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 20px;
+    position: relative;
+  }
+  .card.accent-left { border-left: 3px solid var(--accent1); }
+  .card.accent-orange { border-left: 3px solid var(--accent2); }
+  .card.accent-green { border-left: 3px solid var(--accent3); }
+
+  .card-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--accent1);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .card-label.orange { color: var(--accent2); }
+  .card-label.green { color: var(--accent3); }
+
+  .card h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+
+  p { color: var(--muted); margin-bottom: 8px; font-size: 12.5px; }
+  p:last-child { margin-bottom: 0; }
+  strong { color: var(--text); font-weight: 600; }
+
+  /* EQUATION BOX */
+  .eq-box {
+    background: rgba(0,229,255,0.05);
+    border: 1px solid rgba(0,229,255,0.2);
+    padding: 14px 18px;
+    margin: 12px 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--accent1);
+    text-align: center;
+    line-height: 1.8;
+  }
+  .eq-box .eq-label {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  /* COMPARISON TABLE */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11.5px;
+    margin-top: 8px;
+  }
+  .compare-table th {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 6px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .compare-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--muted);
+    vertical-align: top;
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table td.label { color: var(--text); font-weight: 600; font-size: 11px; }
+  .compare-table td.yes { color: var(--accent3); }
+  .compare-table td.no { color: var(--accent2); }
+  .compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* METRIC BAR */
+  .metric { margin: 10px 0; }
+  .metric-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+    font-size: 11px;
+  }
+  .metric-name { color: var(--text); }
+  .metric-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent1);
+  }
+  .metric-val.orange { color: var(--accent2); }
+  .metric-val.green { color: var(--accent3); }
+  .bar-bg {
+    height: 5px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--accent1);
+    position: relative;
+  }
+  .bar-fill.orange { background: var(--accent2); }
+  .bar-fill.green { background: var(--accent3); }
+  @keyframes barGrow { from { width: 0; } }
+  .bar-fill { animation: barGrow 1.2s ease-out forwards; }
+
+  /* FLOW DIAGRAM */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 12px 0;
+    flex-wrap: wrap;
+  }
+  .flow-box {
+    background: rgba(0,229,255,0.07);
+    border: 1px solid rgba(0,229,255,0.25);
+    padding: 8px 12px;
+    font-size: 11px;
+    color: var(--text);
+    text-align: center;
+    flex: 1;
+    min-width: 80px;
+  }
+  .flow-box.pred {
+    background: rgba(255,107,53,0.07);
+    border-color: rgba(255,107,53,0.25);
+  }
+  .flow-box.target {
+    background: rgba(127,255,106,0.07);
+    border-color: rgba(127,255,106,0.25);
+  }
+  .flow-box .fb-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 3px;
+  }
+  .arrow {
+    color: var(--muted);
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  /* BULLETS */
+  .bullet-list { list-style: none; padding: 0; margin-top: 6px; }
+  .bullet-list li {
+    color: var(--muted);
+    padding: 4px 0 4px 18px;
+    font-size: 12px;
+    position: relative;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+  .bullet-list li:last-child { border-bottom: none; }
+  .bullet-list li::before {
+    content: '▸';
+    position: absolute; left: 0;
+    color: var(--accent1);
+    font-size: 10px;
+    top: 5px;
+  }
+  .bullet-list.orange li::before { color: var(--accent2); }
+  .bullet-list.green li::before { color: var(--accent3); }
+
+  /* HIGHLIGHT STAT */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .stat-box {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    padding: 12px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--accent1);
+    line-height: 1;
+    display: block;
+  }
+  .stat-num.orange { color: var(--accent2); }
+  .stat-num.green { color: var(--accent3); }
+  .stat-desc {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  /* FOOTER */
+  .footer {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .footer-ref {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+  }
+  .footer-ref strong { color: var(--accent1); }
+  .qr-placeholder {
+    width: 52px; height: 52px;
+    border: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2px;
+    padding: 4px;
+  }
+  .qr-cell { background: var(--accent1); border-radius: 1px; }
+  .qr-cell.off { background: transparent; }
+
+  /* KEY INSIGHT banner */
+  .insight-banner {
+    background: linear-gradient(90deg, rgba(0,229,255,0.12), rgba(255,107,53,0.08));
+    border: 1px solid rgba(0,229,255,0.3);
+    border-left: 4px solid var(--accent1);
+    padding: 14px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .insight-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .insight-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 15px;
+    color: #fff;
+    line-height: 1.5;
+    font-style: italic;
+  }
+  .insight-text em { color: var(--accent1); font-style: normal; }
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="tag">Project Proposal · Research Poster</div>
+    <h1>Exploration by <em>Random Network Distillation</em></h1>
+    <div class="authors">
+      Original Authors: <span>Yuri Burda, Harrison Edwards, Amos Storkey, Oleg Klimov</span> &nbsp;·&nbsp;
+      OpenAI &amp; University of Edinburgh &nbsp;·&nbsp; ICLR 2019
+    </div>
+  </div>
+
+  <!-- KEY INSIGHT -->
+  <div class="insight-banner">
+    <div class="insight-icon">💡</div>
+    <div class="insight-text">
+      "RND generates <em>intrinsic rewards</em> by measuring prediction error of a randomly initialized fixed target network — novel states are <em>harder to predict</em>, thus rewarded more, driving deep exploration without any hand-crafted bonus."
+    </div>
+  </div>
+
+  <!-- ROW 1: Problem + Motivation + Architecture -->
+  <div class="grid-3">
+
+    <!-- Problem Statement -->
+    <div class="card accent-left">
+      <div class="card-label">01 · Problem</div>
+      <h2>The Exploration Challenge</h2>
+      <p>Reinforcement learning agents fail in <strong>sparse reward environments</strong> — they cannot stumble upon rewards by chance in large state spaces.</p>
+      <p>Classic ε-greedy and random policies are insufficient when rewards are separated by thousands of steps from any meaningful action.</p>
+      <div class="eq-box">
+        <span class="eq-label">The Hard Exploration Problem</span>
+        𝔼[R] ≈ 0 &nbsp;⟹&nbsp; No gradient signal<br>
+        ∴ Policy π learns nothing useful
+      </div>
+      <ul class="bullet-list">
+        <li>Montezuma's Revenge: rooms separated by lethal traps</li>
+        <li>Pitfall!: 255 connected screens, reward every ~500 steps</li>
+        <li>Venture: rooms locked until sub-goals met</li>
+      </ul>
+    </div>
+
+    <!-- Motivation -->
+    <div class="card accent-orange">
+      <div class="card-label orange">02 · Motivation</div>
+      <h2>Why Prior Methods Fall Short</h2>
+      <table class="compare-table">
+        <tr>
+          <th>Method</th>
+          <th>Limitation</th>
+          <th>Scalable?</th>
+        </tr>
+        <tr>
+          <td class="label">Count-based</td>
+          <td>Requires exact state visits; fails in continuous/image spaces</td>
+          <td class="no">✗</td>
+        </tr>
+        <tr>
+          <td class="label">ICM (Curiosity)</td>
+          <td>Noisy-TV problem: stochastic env. yields infinite intrinsic reward</td>
+          <td class="no">✗</td>
+        </tr>
+        <tr>
+          <td class="label">VIME</td>
+          <td>Expensive Bayesian updates; computationally intractable</td>
+          <td class="no">✗</td>
+        </tr>
+        <tr>
+          <td class="label">Pseudo-counts</td>
+          <td>Density model training is complex; unstable with raw pixels</td>
+          <td class="no">✗</td>
+        </tr>
+        <tr>
+          <td class="label" style="color:var(--accent3)">RND (ours)</td>
+          <td style="color:var(--muted)">Deterministic bonus, no model of env. dynamics needed</td>
+          <td class="yes">✓</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Core Idea -->
+    <div class="card accent-green">
+      <div class="card-label green">03 · Core Idea</div>
+      <h2>Random Network Distillation</h2>
+      <p>Two networks with <strong>identical architecture</strong> but different roles:</p>
+      <div class="flow">
+        <div class="flow-box target">
+          <span class="fb-label">Target (Fixed)</span>
+          f: 𝒮 → ℝᵏ
+        </div>
+        <div class="arrow">→</div>
+        <div class="flow-box pred">
+          <span class="fb-label">Predictor (Trained)</span>
+          f̂θ: 𝒮 → ℝᵏ
+        </div>
+      </div>
+      <div class="eq-box">
+        <span class="eq-label">Intrinsic Reward Signal</span>
+        rⁱ(sₜ) = ‖ f̂θ(sₜ) − f(sₜ) ‖²
+      </div>
+      <p><strong>Key insight:</strong> The predictor only trains on visited states. Novel states are out-of-distribution → high error → high reward. The target is <em>never updated</em>.</p>
+      <p>This sidesteps the noisy-TV problem: random networks are deterministic, so stochastic states don't generate spurious rewards.</p>
+    </div>
+
+  </div>
+
+  <!-- ROW 2: Architecture + Training + Rewards -->
+  <div class="grid-2-1">
+
+    <!-- Full Architecture -->
+    <div class="card accent-left">
+      <div class="card-label">04 · System Architecture</div>
+      <h2>Combined Extrinsic + Intrinsic Learning</h2>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0;">
+        <div style="background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.2);padding:12px;">
+          <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--accent1);margin-bottom:6px;">EXTRINSIC STREAM</div>
+          <p style="font-size:11px;">Standard game reward rᵉ from environment. Uses <strong>discounted returns</strong> with γᵉ = 0.999.</p>
+          <p style="font-size:11px;">Handles long-horizon task structure — survive, collect keys, reach exit.</p>
+        </div>
+        <div style="background:rgba(255,107,53,0.05);border:1px solid rgba(255,107,53,0.2);padding:12px;">
+          <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--accent2);margin-bottom:6px;">INTRINSIC STREAM</div>
+          <p style="font-size:11px;">RND bonus rⁱ = prediction error. Uses <strong>non-episodic</strong> returns with γⁱ = 0.99.</p>
+          <p style="font-size:11px;">Encourages visiting new rooms across episode boundaries — vital for deep exploration.</p>
+        </div>
+      </div>
+
+      <p>Both streams feed into a <strong>PPO (Proximal Policy Optimization)</strong> backbone with separate value heads for extrinsic and intrinsic rewards:</p>
+
+      <div class="eq-box" style="text-align:left;padding:12px 16px;">
+        <span class="eq-label">Dual Value Head Objective</span>
+        Vₜₒₜₐₗ = Vᵉ(s) + Vⁱ(s)<br>
+        Rₜₒₜₐₗ = rᵉₜ + β · rⁱₜ &nbsp;&nbsp;(β tuned per env.)
+      </div>
+
+      <p>Observation preprocessing: <strong>random CNN features</strong> on 84×84 grayscale frames. Running mean/std normalization applied to both observations and intrinsic rewards to stabilize training.</p>
+    </div>
+
+    <!-- Key Properties -->
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="card accent-green" style="flex:1;">
+        <div class="card-label green">05 · Key Properties</div>
+        <ul class="bullet-list green">
+          <li><strong>No dynamics model</strong> — avoids model errors</li>
+          <li><strong>Deterministic bonus</strong> — immune to noisy-TV</li>
+          <li><strong>Computationally cheap</strong> — one forward pass</li>
+          <li><strong>Plug-and-play</strong> — works with any RL algorithm</li>
+          <li><strong>Non-episodic intrinsic</strong> — crosses episode boundaries</li>
+          <li><strong>Parallel rollouts</strong> — 128 environments simultaneously</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:rgba(127,255,106,0.15);flex:0.8;">
+        <div class="card-label green">Observation Normalization</div>
+        <div class="eq-box" style="font-size:11px;padding:10px;">
+          <span class="eq-label">Running Stats</span>
+          ō = (o − μ̂) / √(σ̂² + ε)<br>
+          clipped to [−5, 5]
+        </div>
+        <p style="font-size:11px;margin-top:6px;">Prevents early saturation of the intrinsic bonus when reward scale varies significantly across training.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ROW 3: Results -->
+  <div class="grid-3">
+
+    <!-- Benchmark Results -->
+    <div class="card accent-left">
+      <div class="card-label">06 · Results · Montezuma's Revenge</div>
+      <h2>State-of-the-Art Performance</h2>
+      <p><strong>Atari 2600</strong> hard-exploration benchmark (as of ICLR 2019):</p>
+
+      <div class="metric">
+        <div class="metric-label"><span class="metric-name">RND (proposed)</span><span class="metric-val">10,000+</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:95%"></div></div>
+      </div>
+      <div class="metric">
+        <div class="metric-label"><span class="metric-name">PPO (baseline)</span><span class="metric-val">~2,500</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:24%"></div></div>
+      </div>
+      <div class="metric">
+        <div class="metric-label"><span class="metric-name">ICM (curiosity)</span><span class="metric-val">~2,400</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:23%"></div></div>
+      </div>
+      <div class="metric">
+        <div class="metric-label"><span class="metric-name">Random (human = 4,753)</span><span class="metric-val">~0</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:1%"></div></div>
+      </div>
+
+      <p style="margin-top:10px;">RND reaches <strong>22 of 24 rooms</strong> in Montezuma's Revenge — comparable to human expert performance at first contact with the game.</p>
+    </div>
+
+    <!-- Pitfall + Venture -->
+    <div class="card accent-orange">
+      <div class="card-label orange">07 · Results · Other Hard Games</div>
+      <h2>Generalizes Across Domains</h2>
+
+      <div class="stat-grid">
+        <div class="stat-box">
+          <span class="stat-num green">+900</span>
+          <div class="stat-desc">Pitfall! score<br>(prior SOTA: 0)</div>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">1,800+</span>
+          <div class="stat-desc">Venture score<br>(prior SOTA: ~1,200)</div>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num orange">22/24</span>
+          <div class="stat-desc">Rooms explored<br>Montezuma's</div>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num green">128</span>
+          <div class="stat-desc">Parallel envs<br>training speed</div>
+        </div>
+      </div>
+
+      <p style="margin-top:10px;"><strong>Pitfall!</strong> — first RL method to achieve positive score. The game has 255 underground rooms; the agent learns to navigate hazards purely from intrinsic motivation.</p>
+      <p><strong>Non-episodic intrinsic returns</strong> are critical here — the agent must remember it visited a room last episode to suppress its reward this episode.</p>
+    </div>
+
+    <!-- Research Proposal -->
+    <div class="card" style="border-color:rgba(127,255,106,0.25);">
+      <div class="card-label green">08 · Research Proposal</div>
+      <h2>Extensions We Propose</h2>
+      <ul class="bullet-list green">
+        <li><strong>RND in Continuous Control:</strong> Apply to MuJoCo locomotion with sparse rewards — does intrinsic curiosity help when states are continuous?</li>
+        <li><strong>Adaptive β Scheduling:</strong> Anneal intrinsic weight β over training; heavy exploration early, exploitation later</li>
+        <li><strong>Multi-head Target Networks:</strong> Use an ensemble of random networks to produce smoother, more calibrated novelty estimates</li>
+        <li><strong>Hierarchical RND:</strong> Apply RND at multiple temporal scales — room-level and object-level novelty simultaneously</li>
+        <li><strong>Transfer of Predictor:</strong> Pre-train predictor on one game family; measure jump-start on new games</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div>
+      <div class="footer-ref"><strong>Paper:</strong> "Exploration by Random Network Distillation" — Burda et al., ICLR 2019</div>
+      <div class="footer-ref" style="margin-top:4px;"><strong>ArXiv:</strong> 1810.12894 &nbsp;·&nbsp; <strong>Code:</strong> github.com/openai/random-network-distillation</div>
+      <div class="footer-ref" style="margin-top:4px;color:rgba(136,146,164,0.6);">Project Proposal Poster &nbsp;·&nbsp; Reinforcement Learning Course &nbsp;·&nbsp; 2025–26</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div style="text-align:right;">
+        <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;">KEY ALGORITHM</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--accent1);margin-top:3px;">PPO + RND Bonus</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--accent3);">Non-episodic Intrinsic</div>
+      </div>
+      <div class="qr-placeholder">
+        <div class="qr-cell"></div><div class="qr-cell off"></div><div class="qr-cell"></div>
+        <div class="qr-cell off"></div><div class="qr-cell"></div><div class="qr-cell off"></div>
+        <div class="qr-cell"></div><div class="qr-cell off"></div><div class="qr-cell"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

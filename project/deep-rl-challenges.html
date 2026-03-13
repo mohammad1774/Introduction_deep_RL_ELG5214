@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep RL Learning Challenges</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --border: #1e1e2e;
+    --accent: #00ffc8;
+    --accent2: #7c3aed;
+    --accent3: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --done: #10b981;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(0,255,200,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,200,0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .header { margin-bottom: 48px; }
+
+  .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 1rem;
+    max-width: 540px;
+    line-height: 1.6;
+  }
+
+  .progress-section {
+    margin-bottom: 40px;
+    padding: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .progress-label { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--muted); letter-spacing: 1px; }
+  .progress-count { font-family: 'Space Mono', monospace; font-size: 13px; color: var(--accent); font-weight: 700; }
+
+  .progress-bar { height: 6px; background: var(--border); border-radius: 100px; overflow: hidden; }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 100px;
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    width: 0%;
+  }
+
+  .xp-display { margin-top: 12px; font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent3); letter-spacing: 1px; }
+
+  .phase { margin-bottom: 32px; }
+
+  .phase-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+
+  .phase-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    border: 1px solid;
+  }
+
+  .phase-1 .phase-badge { color: #4ade80; border-color: #4ade80; background: rgba(74,222,128,0.08); }
+  .phase-2 .phase-badge { color: var(--accent); border-color: var(--accent); background: rgba(0,255,200,0.08); }
+  .phase-3 .phase-badge { color: #f472b6; border-color: #f472b6; background: rgba(244,114,182,0.08); }
+  .phase-4 .phase-badge { color: var(--accent3); border-color: var(--accent3); background: rgba(245,158,11,0.08); }
+
+  .phase-title { font-size: 1.1rem; font-weight: 600; color: var(--text); }
+
+  .challenge {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .challenge::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+
+  .challenge:hover { border-color: rgba(0,255,200,0.2); transform: translateX(4px); }
+  .challenge:hover::before { background: var(--accent); }
+  .challenge.completed { opacity: 0.65; }
+  .challenge.completed::before { background: var(--done); }
+  .challenge.completed .challenge-title { text-decoration: line-through; color: var(--muted); }
+
+  .checkbox {
+    width: 22px; height: 22px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-size: 13px;
+  }
+
+  .challenge.completed .checkbox { background: var(--done); border-color: var(--done); }
+  .challenge-content { flex: 1; min-width: 0; }
+
+  .challenge-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+
+  .challenge-title { font-size: 0.95rem; font-weight: 600; color: var(--text); transition: color 0.2s; }
+
+  .xp-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--accent3);
+    background: rgba(245,158,11,0.1);
+    border: 1px solid rgba(245,158,11,0.2);
+    padding: 2px 8px;
+    border-radius: 100px;
+    letter-spacing: 1px;
+  }
+
+  .type-badge { font-family: 'Space Mono', monospace; font-size: 9px; padding: 2px 8px; border-radius: 100px; letter-spacing: 1px; text-transform: uppercase; }
+  .type-concept { color: #818cf8; background: rgba(129,140,248,0.1); }
+  .type-code { color: var(--accent); background: rgba(0,255,200,0.08); }
+  .type-math { color: #f472b6; background: rgba(244,114,182,0.08); }
+  .type-project { color: var(--accent3); background: rgba(245,158,11,0.08); }
+
+  .challenge-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; margin-bottom: 4px; }
+  .toggle-hint { font-size: 0.72rem; color: #334155; font-family: 'Space Mono', monospace; }
+
+  .challenge-detail { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+  .challenge-detail.open { max-height: 700px; }
+
+  .detail-inner { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .detail-section { margin-bottom: 16px; }
+
+  .detail-section h4 {
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 8px;
+  }
+
+  .steps-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .steps-list li { font-size: 0.82rem; color: var(--muted); padding-left: 16px; position: relative; line-height: 1.5; }
+  .steps-list li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-size: 10px; top: 2px; }
+
+  .resource-links { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .res-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-family: 'Space Mono', monospace;
+    text-decoration: none;
+    border: 1px solid;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .res-link:hover { transform: translateY(-1px); }
+
+  .res-link.video { color: #f472b6; border-color: rgba(244,114,182,0.25); background: rgba(244,114,182,0.06); }
+  .res-link.video:hover { background: rgba(244,114,182,0.12); }
+  .res-link.read { color: #818cf8; border-color: rgba(129,140,248,0.25); background: rgba(129,140,248,0.06); }
+  .res-link.read:hover { background: rgba(129,140,248,0.12); }
+  .res-link.code { color: var(--accent); border-color: rgba(0,255,200,0.2); background: rgba(0,255,200,0.05); }
+  .res-link.code:hover { background: rgba(0,255,200,0.1); }
+
+  .reset-btn {
+    display: block;
+    margin: 40px auto 0;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 10px 24px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0,255,200,0); }
+    50% { box-shadow: 0 0 24px 4px rgba(0,255,200,0.15); }
+  }
+  .challenge.just-done { animation: pulse-glow 0.6s ease; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="tag">// Learning Path</div>
+    <h1>Deep Reinforcement<br>Learning Challenges</h1>
+    <p class="subtitle">Structured challenges for absolute beginners. Click any card to expand steps and <strong style="color:var(--text)">real working links</strong> to videos, papers & code. Check off each challenge when done.</p>
+  </div>
+
+  <div class="progress-section">
+    <div class="progress-header">
+      <span class="progress-label">Overall Progress</span>
+      <span class="progress-count" id="progressCount">0 / 20</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="xp-display" id="xpDisplay">⚡ 0 XP earned</div>
+  </div>
+
+  <div id="challenges-root"></div>
+  <button class="reset-btn" onclick="resetAll()">↺ Reset All Progress</button>
+</div>
+
+<script>
+const phases = [
+  {
+    id: 1, label: "Phase 1", title: "Foundations",
+    challenges: [
+      {
+        id: "c1", title: "Understand what RL actually is", type: "concept", xp: 50,
+        desc: "Learn the core RL loop: Agent → Action → Environment → Reward → Observation.",
+        steps: [
+          "Watch the Arxiv Insights intro video (~12 min) — best visual explanation for beginners",
+          "Read Sutton & Barto Chapter 1 (free PDF) — just the intro, about 10 pages",
+          "In your own words: what makes RL different from supervised learning?"
+        ],
+        resources: [
+          { type: "video", label: "▶ RL Intro – Arxiv Insights", url: "https://www.youtube.com/watch?v=JgvyzIkgxF0" },
+          { type: "video", label: "▶ RL in 5 min – Sentdex", url: "https://www.youtube.com/watch?v=yMk_XtIEzH8" },
+          { type: "read", label: "📖 Sutton & Barto Book (Free)", url: "http://incompleteideas.net/book/the-book-2nd.html" },
+          { type: "read", label: "📖 OpenAI Spinning Up – RL Intro", url: "https://spinningup.openai.com/en/latest/spinningup/rl_intro.html" },
+        ]
+      },
+      {
+        id: "c2", title: "Build intuition with the Multi-Armed Bandit", type: "concept", xp: 50,
+        desc: "The simplest RL problem — exploration vs. exploitation with slot machines.",
+        steps: [
+          "Watch the bandit problem video — understand exploration vs exploitation",
+          "Think: if you had 5 slot machines with unknown win rates, what's your strategy after 10 tries?",
+          "Define ε-greedy in your own words: when do you explore, when do you exploit?"
+        ],
+        resources: [
+          { type: "video", label: "▶ Multi-Armed Bandit – Mutual Information", url: "https://www.youtube.com/watch?v=e3L4VocZnnQ" },
+          { type: "video", label: "▶ Exploration vs Exploitation – DeepMind", url: "https://www.youtube.com/watch?v=sGuiWX07sKw" },
+          { type: "read", label: "📖 S&B Chapter 2 – Multi-Armed Bandits", url: "http://incompleteideas.net/book/the-book-2nd.html" },
+        ]
+      },
+      {
+        id: "c3", title: "Install your RL toolkit", type: "code", xp: 75,
+        desc: "Set up Python, Gymnasium (the standard RL environment library), and PyTorch.",
+        steps: [
+          "Run: pip install gymnasium torch numpy matplotlib",
+          "Test: import gymnasium as gym; env = gym.make('CartPole-v1')",
+          "Print env.observation_space and env.action_space — understand what these mean",
+          "Follow the Gymnasium quickstart guide linked below"
+        ],
+        resources: [
+          { type: "video", label: "▶ Gymnasium Setup Tutorial", url: "https://www.youtube.com/watch?v=gMgj4pSHLww" },
+          { type: "code", label: "</> Gymnasium – Getting Started Docs", url: "https://gymnasium.farama.org/introduction/basic_usage/" },
+          { type: "code", label: "</> PyTorch Install Guide", url: "https://pytorch.org/get-started/locally/" },
+        ]
+      },
+      {
+        id: "c4", title: "Run a random agent on CartPole", type: "code", xp: 100,
+        desc: "Write ~15 lines of code that plays CartPole-v1 with completely random actions.",
+        steps: [
+          "Loop: obs = env.reset() → action = env.action_space.sample() → env.step(action)",
+          "Count total reward per episode and print it after each episode",
+          "Run 10 episodes — observe that random play averages only ~15–25 steps",
+          "Read the CartPole docs so you understand what the 4 observations mean"
+        ],
+        resources: [
+          { type: "video", label: "▶ CartPole Walkthrough – Nicholas Renotte", url: "https://www.youtube.com/watch?v=Mut_u40Sqz4" },
+          { type: "code", label: "</> CartPole Environment Docs", url: "https://gymnasium.farama.org/environments/classic_control/cart_pole/" },
+          { type: "code", label: "</> Gymnasium Basic Usage Guide", url: "https://gymnasium.farama.org/introduction/basic_usage/" },
+        ]
+      },
+      {
+        id: "c5", title: "Master Markov Decision Processes (MDPs)", type: "math", xp: 75,
+        desc: "MDPs are the mathematical backbone of all RL. Every algorithm is built on this.",
+        steps: [
+          "Watch the MDP explainer — focus on the 5-tuple definition",
+          "Write down: (S, A, P, R, γ) and explain each component in your own words",
+          "Draw an MDP diagram for a 3-state problem (e.g., a tiny 1D grid: start, middle, goal)",
+          "Key question: what does the Markov property say about states?"
+        ],
+        resources: [
+          { type: "video", label: "▶ MDPs Explained – Mutual Information", url: "https://www.youtube.com/watch?v=my207WNoeyA" },
+          { type: "video", label: "▶ David Silver Lecture 2 – MDPs (UCL)", url: "https://www.youtube.com/watch?v=lfHX2hHRMVQ" },
+          { type: "read", label: "📖 S&B Chapter 3 – Finite MDPs", url: "http://incompleteideas.net/book/the-book-2nd.html" },
+        ]
+      },
+    ]
+  },
+  {
+    id: 2, label: "Phase 2", title: "Classic RL Algorithms",
+    challenges: [
+      {
+        id: "c6", title: "Understand the Bellman Equation", type: "math", xp: 100,
+        desc: "The Bellman equation is the foundation of almost every RL algorithm ever made.",
+        steps: [
+          "Watch the Bellman equation video — focus on intuition before memorizing the formula",
+          "Write out: V(s) = max_a [R(s,a) + γ · V(s')] and explain what each symbol means",
+          "Manually compute V(s) for a 2-state MDP on paper (use γ=0.9, R=+1 at goal)",
+          "Understand: what does setting γ=0 mean? What about γ=1?"
+        ],
+        resources: [
+          { type: "video", label: "▶ Bellman Equation – Mutual Information", url: "https://www.youtube.com/watch?v=14BfO5lMiuk" },
+          { type: "video", label: "▶ Value Functions & Bellman – David Silver", url: "https://www.youtube.com/watch?v=UoPei5o4fps" },
+          { type: "read", label: "📖 Spinning Up – Key Concepts", url: "https://spinningup.openai.com/en/latest/spinningup/rl_intro.html#key-concepts-and-terminology" },
+        ]
+      },
+      {
+        id: "c7", title: "Implement Value Iteration from scratch", type: "code", xp: 125,
+        desc: "Build Value Iteration on a 4x4 grid world — no libraries needed, just Python.",
+        steps: [
+          "Define a 4x4 grid with 1 goal state (+1 reward) and 1 trap state (-1 reward)",
+          "Initialize V(s) = 0 for all 16 states",
+          "Loop: update V(s) = max_a [R + γ·V(s')] for each state until values converge",
+          "Extract and print the optimal policy (show arrows: ↑ ↓ ← → per cell)"
+        ],
+        resources: [
+          { type: "video", label: "▶ Value Iteration – Normalized Nerd", url: "https://www.youtube.com/watch?v=wVXXLLT-mZA" },
+          { type: "video", label: "▶ DP & Value Iteration – David Silver", url: "https://www.youtube.com/watch?v=Nd1-UUMVfz4" },
+          { type: "code", label: "</> dennybritz – DP Implementations", url: "https://github.com/dennybritz/reinforcement-learning/tree/master/DP" },
+        ]
+      },
+      {
+        id: "c8", title: "Code Q-learning from scratch", type: "code", xp: 150,
+        desc: "Tabular Q-learning — the classic model-free algorithm. Solve FrozenLake-v1.",
+        steps: [
+          "Initialize Q-table as zeros, shape: (n_states × n_actions) = (16 × 4)",
+          "Implement update: Q(s,a) ← Q(s,a) + α[r + γ·max Q(s',·) − Q(s,a)]",
+          "Run 10,000 episodes on FrozenLake-v1 with is_slippery=False first",
+          "Plot the rolling success rate — watch it climb from ~5% to ~90%+"
+        ],
+        resources: [
+          { type: "video", label: "▶ Q-Learning Explained – Sentdex", url: "https://www.youtube.com/watch?v=yMk_XtIEzH8" },
+          { type: "video", label: "▶ Q-Learning from Scratch – Nicholas Renotte", url: "https://www.youtube.com/watch?v=Mut_u40Sqz4" },
+          { type: "code", label: "</> FrozenLake Environment Docs", url: "https://gymnasium.farama.org/environments/toy_text/frozen_lake/" },
+          { type: "code", label: "</> dennybritz – Q-Learning Reference", url: "https://github.com/dennybritz/reinforcement-learning/tree/master/TD" },
+        ]
+      },
+      {
+        id: "c9", title: "Master ε-greedy exploration", type: "concept", xp: 75,
+        desc: "The standard way RL agents balance trying new things vs. using what they know.",
+        steps: [
+          "Add ε-greedy to your Q-learning: with prob ε pick random action, else argmax(Q)",
+          "Train FrozenLake with ε = 0.0, 0.1, 0.5 separately — compare final win rates",
+          "Add ε-decay: start at 1.0, multiply by 0.995 each episode",
+          "Observe: a decaying ε usually gives the best of both worlds — why?"
+        ],
+        resources: [
+          { type: "video", label: "▶ Exploration vs Exploitation – DeepMind", url: "https://www.youtube.com/watch?v=sGuiWX07sKw" },
+          { type: "read", label: "📖 Spinning Up – Exploration Overview", url: "https://spinningup.openai.com/en/latest/spinningup/rl_intro.html" },
+          { type: "read", label: "📖 S&B Chapter 2.7 – UCB Exploration", url: "http://incompleteideas.net/book/the-book-2nd.html" },
+        ]
+      },
+      {
+        id: "c10", title: "Solve CartPole with Q-learning", type: "project", xp: 200,
+        desc: "CartPole has continuous states — you must discretize them to use a Q-table.",
+        steps: [
+          "Bin each of the 4 continuous CartPole observations into ~10 discrete buckets",
+          "Use your Q-learning code from c8, with the discretized state as the key",
+          "Train for 50,000 episodes with ε-decay",
+          "Goal: average reward > 195 over 100 consecutive episodes (official solved threshold)"
+        ],
+        resources: [
+          { type: "video", label: "▶ CartPole Q-Learning – Sentdex", url: "https://www.youtube.com/watch?v=Mut_u40Sqz4" },
+          { type: "read", label: "📖 Spinning Up – RL Intro Part 2", url: "https://spinningup.openai.com/en/latest/spinningup/rl_intro2.html" },
+          { type: "code", label: "</> CartPole Observation Space Explained", url: "https://gymnasium.farama.org/environments/classic_control/cart_pole/" },
+        ]
+      },
+    ]
+  },
+  {
+    id: 3, label: "Phase 3", title: "Deep RL Begins",
+    challenges: [
+      {
+        id: "c11", title: "Understand why Q-tables don't scale", type: "concept", xp: 75,
+        desc: "Grasp the 'curse of dimensionality' and why neural networks are the solution.",
+        steps: [
+          "Count: FrozenLake has 16 states. Atari has 210×160×3 pixel states — how many?",
+          "Watch the video below — understand function approximation",
+          "Key insight: instead of storing Q(s,a) in a table, a neural network learns Q(s,a) as a function",
+          "Be able to explain: what does the neural network take as input, and what does it output?"
+        ],
+        resources: [
+          { type: "video", label: "▶ Why Deep RL? – Arxiv Insights", url: "https://www.youtube.com/watch?v=JgvyzIkgxF0" },
+          { type: "video", label: "▶ Deep RL Bootcamp Lecture 1", url: "https://www.youtube.com/watch?v=qaMdN6LS9rA" },
+          { type: "read", label: "📖 Spinning Up – RL Overview", url: "https://spinningup.openai.com/en/latest/spinningup/rl_intro.html" },
+        ]
+      },
+      {
+        id: "c12", title: "Build a neural Q-function in PyTorch", type: "code", xp: 150,
+        desc: "Replace the Q-table with a small neural network. This is the heart of DQN.",
+        steps: [
+          "Define a 2-layer MLP: input=4 (CartPole obs), hidden=64, output=2 (actions)",
+          "Forward pass: feed a state tensor → get Q-values for both actions",
+          "Select action: index = torch.argmax(q_values).item()",
+          "Test: pass a random CartPole observation in, confirm output shape is (2,)"
+        ],
+        resources: [
+          { type: "video", label: "▶ PyTorch Neural Nets in 60min", url: "https://www.youtube.com/watch?v=mozBidd58VI" },
+          { type: "code", label: "</> PyTorch nn.Module Docs", url: "https://pytorch.org/docs/stable/generated/torch.nn.Module.html" },
+          { type: "code", label: "</> CleanRL – Clean RL Implementations", url: "https://github.com/vwxyzjn/cleanrl" },
+        ]
+      },
+      {
+        id: "c13", title: "Implement DQN on CartPole", type: "project", xp: 250,
+        desc: "Deep Q-Network — the algorithm that cracked Atari games in 2013. Build it yourself.",
+        steps: [
+          "Add experience replay buffer: store (s, a, r, s', done), sample random mini-batches",
+          "Add a target network: copy Q-network weights every 100 steps (stabilizes training)",
+          "Compute loss: MSE between Q(s,a) and [r + γ·max Q_target(s')]",
+          "Achieve mean reward > 195 over 100 episodes — you've solved CartPole with deep RL!"
+        ],
+        resources: [
+          { type: "video", label: "▶ DQN from Scratch – Nicholas Renotte", url: "https://www.youtube.com/watch?v=wc-FxNENg9U" },
+          { type: "video", label: "▶ DQN Explained – Arxiv Insights", url: "https://www.youtube.com/watch?v=JgvyzIkgxF0" },
+          { type: "read", label: "📖 Original DQN Paper – Mnih et al 2013", url: "https://arxiv.org/abs/1312.5602" },
+          { type: "code", label: "</> CleanRL DQN – Single-File Impl", url: "https://github.com/vwxyzjn/cleanrl/blob/master/cleanrl/dqn.py" },
+        ]
+      },
+      {
+        id: "c14", title: "Understand Policy Gradient intuition", type: "concept", xp: 100,
+        desc: "A completely different family of RL algorithms — optimize the policy directly.",
+        steps: [
+          "Watch the Andrej Karpathy lecture — he's one of the best explainers alive",
+          "Key insight: increase the probability of actions that led to high rewards",
+          "Compare value-based (DQN) vs policy-based (REINFORCE): what are the tradeoffs?",
+          "Read the Lilian Weng blog post — one of the best RL references on the internet"
+        ],
+        resources: [
+          { type: "video", label: "▶ Policy Gradients – Andrej Karpathy", url: "https://www.youtube.com/watch?v=tqrcjHuNdmQ" },
+          { type: "video", label: "▶ Policy Gradients – Pieter Abbeel", url: "https://www.youtube.com/watch?v=S_gwYj1Q-44" },
+          { type: "read", label: "📖 Lilian Weng – Policy Gradient Algorithms", url: "https://lilianweng.github.io/posts/2018-04-08-policy-gradient/" },
+          { type: "read", label: "📖 Spinning Up – Policy Gradient Intro", url: "https://spinningup.openai.com/en/latest/spinningup/rl_intro3.html" },
+        ]
+      },
+      {
+        id: "c15", title: "Implement REINFORCE algorithm", type: "code", xp: 200,
+        desc: "The simplest policy gradient — Monte Carlo policy optimization. Pure PyTorch.",
+        steps: [
+          "Collect a full episode trajectory: list of (s, a, log_prob, r) for each timestep",
+          "Compute discounted returns: G_t = r_t + γ·r_{t+1} + γ²·r_{t+2} + ...",
+          "Update: loss = -Σ log_prob(a_t) × G_t — backprop through this",
+          "Train on CartPole — should learn to solve it in ~500–1000 episodes"
+        ],
+        resources: [
+          { type: "video", label: "▶ REINFORCE from Scratch – Phil Tabor", url: "https://www.youtube.com/watch?v=5eSh5F8gjWU" },
+          { type: "code", label: "</> CleanRL – Policy Gradient Impl", url: "https://github.com/vwxyzjn/cleanrl" },
+          { type: "read", label: "📖 REINFORCE Paper – Williams 1992", url: "https://link.springer.com/article/10.1007/BF00992696" },
+        ]
+      },
+    ]
+  },
+  {
+    id: 4, label: "Phase 4", title: "Modern Deep RL",
+    challenges: [
+      {
+        id: "c16", title: "Understand Actor-Critic architecture", type: "concept", xp: 125,
+        desc: "Combine value and policy methods — the foundation of nearly all modern RL.",
+        steps: [
+          "Watch the Actor-Critic video — focus on why we need two networks",
+          "Define: Actor = policy network π(a|s), Critic = value network V(s)",
+          "Key question: how does the Critic reduce variance? Why does variance matter?",
+          "Draw the architecture: two networks, how loss flows through each"
+        ],
+        resources: [
+          { type: "video", label: "▶ Actor-Critic Explained – Chris G", url: "https://www.youtube.com/watch?v=w_3mmm0P0j8" },
+          { type: "video", label: "▶ A3C Paper Explained – Arxiv Insights", url: "https://www.youtube.com/watch?v=Ioq4doQUMM8" },
+          { type: "read", label: "📖 Lilian Weng – Actor-Critic Algorithms", url: "https://lilianweng.github.io/posts/2018-04-08-policy-gradient/#actor-critic" },
+        ]
+      },
+      {
+        id: "c17", title: "Implement A2C on LunarLander", type: "project", xp: 300,
+        desc: "Advantage Actor-Critic — one step up from REINFORCE, stepping stone to PPO.",
+        steps: [
+          "Install: pip install 'gymnasium[box2d]'; env = gym.make('LunarLander-v2')",
+          "Compute advantage: A(s,a) = r + γ·V(s') − V(s)",
+          "Actor loss: −log π(a|s) · A(s,a) | Critic loss: MSE(V(s), r + γ·V(s'))",
+          "Record a video of your trained agent landing — compare to a random agent"
+        ],
+        resources: [
+          { type: "video", label: "▶ A2C on LunarLander – Phil Tabor", url: "https://www.youtube.com/watch?v=OcIx_TBu90Q" },
+          { type: "code", label: "</> LunarLander Environment Docs", url: "https://gymnasium.farama.org/environments/box2d/lunar_lander/" },
+          { type: "code", label: "</> CleanRL A2C Implementation", url: "https://github.com/vwxyzjn/cleanrl" },
+        ]
+      },
+      {
+        id: "c18", title: "Study PPO – Proximal Policy Optimization", type: "concept", xp: 150,
+        desc: "PPO is the most widely used RL algorithm today — it powered ChatGPT's RLHF training.",
+        steps: [
+          "Watch the PPO explanation video — the 'clipped surrogate objective' is the key idea",
+          "Understand: why does PPO need a trust region? What goes wrong with big policy updates?",
+          "Read the original PPO paper — just abstract + Section 3 (the algorithm)",
+          "Read the '37 PPO implementation details' blog — real-world RL is full of tricks"
+        ],
+        resources: [
+          { type: "video", label: "▶ PPO Explained – Arxiv Insights", url: "https://www.youtube.com/watch?v=5P7I-xPq8u8" },
+          { type: "video", label: "▶ PPO Implementation – Phil Tabor", url: "https://www.youtube.com/watch?v=hlv79rcHws0" },
+          { type: "read", label: "📖 PPO Paper – Schulman et al 2017", url: "https://arxiv.org/abs/1707.06347" },
+          { type: "read", label: "📖 37 Implementation Details of PPO", url: "https://iclr-blog-track.github.io/2022/03/25/ppo-implementation-details/" },
+        ]
+      },
+      {
+        id: "c19", title: "Use Stable-Baselines3 to train & evaluate", type: "code", xp: 175,
+        desc: "Production-grade RL library used by researchers. Train PPO in ~10 lines of code.",
+        steps: [
+          "Install: pip install stable-baselines3",
+          "Train: model = PPO('MlpPolicy', env, verbose=1); model.learn(total_timesteps=100_000)",
+          "Evaluate: mean_reward, std = evaluate_policy(model, env, n_eval_episodes=10)",
+          "Try swapping PPO → A2C → SAC and compare: which works best on LunarLander?"
+        ],
+        resources: [
+          { type: "video", label: "▶ Stable-Baselines3 Tutorial – N. Renotte", url: "https://www.youtube.com/watch?v=XbWhJdQgi7E" },
+          { type: "code", label: "</> SB3 Official Quickstart Docs", url: "https://stable-baselines3.readthedocs.io/en/master/guide/quickstart.html" },
+          { type: "code", label: "</> SB3 GitHub + More Examples", url: "https://github.com/DLR-RM/stable-baselines3" },
+        ]
+      },
+      {
+        id: "c20", title: "Capstone: Beat a continuous control environment", type: "project", xp: 500,
+        desc: "Train an agent to solve BipedalWalker or HalfCheetah. Document everything.",
+        steps: [
+          "Choose: BipedalWalker-v3 (challenging, satisfying to watch) or Hopper-v4 (more moderate)",
+          "Use SB3's PPO or SAC — tune hyperparameters: lr, n_steps, batch_size, clip_range",
+          "Train for 1–5M timesteps — record video of your best agent",
+          "Write a 1-page training log: what you tried, what worked, what failed, what's next"
+        ],
+        resources: [
+          { type: "video", label: "▶ BipedalWalker PPO – Phil Tabor", url: "https://www.youtube.com/watch?v=07Je7Aan-3s" },
+          { type: "code", label: "</> BipedalWalker Environment Docs", url: "https://gymnasium.farama.org/environments/box2d/bipedal_walker/" },
+          { type: "read", label: "📖 Spinning Up – Key Papers in Deep RL", url: "https://spinningup.openai.com/en/latest/spinningup/keypapers.html" },
+          { type: "code", label: "</> CleanRL Benchmarks & Docs", url: "https://docs.cleanrl.dev/" },
+        ]
+      },
+    ]
+  }
+];
+
+let completed = new Set(JSON.parse(localStorage.getItem('drl_completed') || '[]'));
+
+function saveState() { localStorage.setItem('drl_completed', JSON.stringify([...completed])); }
+
+function getXP() {
+  let t = 0;
+  phases.forEach(p => p.challenges.forEach(c => { if (completed.has(c.id)) t += c.xp; }));
+  return t;
+}
+
+function getTotalXP() {
+  let t = 0;
+  phases.forEach(p => p.challenges.forEach(c => t += c.xp));
+  return t;
+}
+
+function updateProgress() {
+  const total = phases.reduce((a, p) => a + p.challenges.length, 0);
+  const done = completed.size;
+  document.getElementById('progressFill').style.width = (done / total * 100) + '%';
+  document.getElementById('progressCount').textContent = `${done} / ${total}`;
+  document.getElementById('xpDisplay').textContent = `⚡ ${getXP().toLocaleString()} / ${getTotalXP().toLocaleString()} XP earned`;
+}
+
+let openCard = null;
+
+function toggleChallenge(id) {
+  const detail = document.getElementById('detail-' + id);
+  if (!detail) return;
+  if (openCard && openCard !== id) {
+    const prev = document.getElementById('detail-' + openCard);
+    if (prev) prev.classList.remove('open');
+  }
+  const isOpen = detail.classList.contains('open');
+  detail.classList.toggle('open', !isOpen);
+  openCard = isOpen ? null : id;
+}
+
+function markDone(event, id) {
+  event.stopPropagation();
+  const card = document.getElementById('card-' + id);
+  if (completed.has(id)) {
+    completed.delete(id);
+    card.classList.remove('completed');
+  } else {
+    completed.add(id);
+    card.classList.add('completed', 'just-done');
+    setTimeout(() => card.classList.remove('just-done'), 700);
+  }
+  saveState();
+  updateProgress();
+}
+
+function resetAll() {
+  if (!confirm('Reset all progress?')) return;
+  completed.clear();
+  saveState();
+  render();
+}
+
+const typeClass = t => ({ concept:'type-concept', code:'type-code', math:'type-math', project:'type-project' }[t] || '');
+
+function render() {
+  const root = document.getElementById('challenges-root');
+  root.innerHTML = '';
+
+  phases.forEach(phase => {
+    const phaseEl = document.createElement('div');
+    phaseEl.className = `phase phase-${phase.id}`;
+    phaseEl.innerHTML = `
+      <div class="phase-header">
+        <span class="phase-badge">${phase.label}</span>
+        <span class="phase-title">${phase.title}</span>
+      </div>
+    `;
+
+    phase.challenges.forEach(c => {
+      const isDone = completed.has(c.id);
+      const card = document.createElement('div');
+      card.className = 'challenge' + (isDone ? ' completed' : '');
+      card.id = 'card-' + c.id;
+      card.onclick = () => toggleChallenge(c.id);
+
+      const resHTML = c.resources.map(r => {
+        const cls = r.type === 'video' ? 'video' : r.type === 'read' ? 'read' : 'code';
+        return `<a class="res-link ${cls}" href="${r.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${r.label}</a>`;
+      }).join('');
+
+      card.innerHTML = `
+        <div class="checkbox" onclick="markDone(event, '${c.id}')">${isDone ? '✓' : ''}</div>
+        <div class="challenge-content">
+          <div class="challenge-top">
+            <span class="challenge-title">${c.title}</span>
+            <span class="type-badge ${typeClass(c.type)}">${c.type}</span>
+            <span class="xp-badge">+${c.xp} XP</span>
+          </div>
+          <div class="challenge-desc">${c.desc}</div>
+          <div class="toggle-hint">↓ click to expand steps & links</div>
+          <div class="challenge-detail" id="detail-${c.id}">
+            <div class="detail-inner">
+              <div class="detail-section">
+                <h4>How to complete it</h4>
+                <ul class="steps-list">${c.steps.map(s => `<li>${s}</li>`).join('')}</ul>
+              </div>
+              <div class="detail-section">
+                <h4>Resources &amp; Links</h4>
+                <div class="resource-links">${resHTML}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      phaseEl.appendChild(card);
+    });
+
+    root.appendChild(phaseEl);
+  });
+
+  updateProgress();
+}
+
+render();
+</script>
+</body>
+</html>
