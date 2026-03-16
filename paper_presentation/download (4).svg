@@ -1,0 +1,46 @@
+<svg width="1000" height="540" viewBox="0 0 1000 540" xmlns="http://www.w3.org/2000/svg">
+
+<style>
+.box{fill:#fff7ed;stroke:#ea580c;stroke-width:2;rx:14}
+.title{font:700 18px Arial}
+.txt{font:14px Arial}
+.arrow{stroke:#111827;stroke-width:2;marker-end:url(#arrow)}
+</style>
+
+<defs>
+<marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+<path d="M0,0 L10,5 L0,10 Z" fill="#111827"></path>
+</marker>
+</defs>
+
+<text x="360" y="40" class="title">Newt Pipeline — Steps 8–10</text>
+
+<!-- World Model Training -->
+<rect x="140" y="200" width="200" height="120" class="box"></rect>
+<text x="170" y="230" class="txt">Step 8</text>
+<text x="170" y="250" class="txt">World Model</text>
+<text x="170" y="270" class="txt">Self Prediction</text>
+<text x="170" y="290" class="txt">Reward Loss</text>
+<text x="170" y="310" class="txt">Value Loss</text>
+
+<!-- Policy Learning -->
+<rect x="420" y="200" width="200" height="120" class="box"></rect>
+<text x="450" y="230" class="txt">Step 9</text>
+<text x="450" y="250" class="txt">Policy Training</text>
+<text x="450" y="270" class="txt">Behavior Cloning</text>
+<text x="450" y="290" class="txt">Q-value Maximization</text>
+<text x="450" y="310" class="txt">Entropy</text>
+
+<!-- Training Loop -->
+<rect x="700" y="200" width="200" height="120" class="box"></rect>
+<text x="730" y="230" class="txt">Step 10</text>
+<text x="730" y="250" class="txt">Training Loop</text>
+<text x="730" y="270" class="txt">Interact</text>
+<text x="730" y="290" class="txt">Store</text>
+<text x="730" y="310" class="txt">Update</text>
+
+<!-- Arrows -->
+<line x1="340" y1="260" x2="420" y2="260" class="arrow"></line>
+<line x1="620" y1="260" x2="700" y2="260" class="arrow"></line>
+
+</svg>

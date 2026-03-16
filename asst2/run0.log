@@ -1,0 +1,142 @@
+2026-03-15 14:59:43 | INFO | Starting Assignment 2 main run
+2026-03-15 14:59:46 | INFO | JAX devices: [CudaDevice(id=0), CudaDevice(id=1)]
+2026-03-15 14:59:46 | INFO | Running experiments for seed=1, gamma=0.9, lr=0.1
+2026-03-15 14:59:46 | INFO | Running Random Agent baseline
+2026-03-15 14:59:49 | INFO | Running REINFORCE
+2026-03-15 15:06:12 | INFO | Running DQN
+2026-03-15 15:10:49 | INFO | Running experiments for seed=1, gamma=0.9, lr=0.01
+2026-03-15 15:10:49 | INFO | Running Random Agent baseline
+2026-03-15 15:10:50 | INFO | Running REINFORCE
+2026-03-15 15:17:11 | INFO | Running DQN
+2026-03-15 15:22:26 | INFO | Running experiments for seed=1, gamma=0.9, lr=0.001
+2026-03-15 15:22:26 | INFO | Running Random Agent baseline
+2026-03-15 15:22:27 | INFO | Running REINFORCE
+2026-03-15 15:28:58 | INFO | Running DQN
+2026-03-15 15:34:57 | INFO | Running experiments for seed=1, gamma=0.99, lr=0.1
+2026-03-15 15:34:57 | INFO | Running Random Agent baseline
+2026-03-15 15:34:58 | INFO | Running REINFORCE
+2026-03-15 15:41:39 | INFO | Running DQN
+2026-03-15 15:51:26 | INFO | Running experiments for seed=1, gamma=0.99, lr=0.01
+2026-03-15 15:51:26 | INFO | Running Random Agent baseline
+2026-03-15 15:51:27 | INFO | Running REINFORCE
+2026-03-15 15:58:15 | INFO | Running DQN
+2026-03-15 16:04:08 | INFO | Running experiments for seed=1, gamma=0.99, lr=0.001
+2026-03-15 16:04:08 | INFO | Running Random Agent baseline
+2026-03-15 16:04:09 | INFO | Running REINFORCE
+2026-03-15 16:10:58 | INFO | Running DQN
+2026-03-15 16:17:19 | INFO | Running experiments for seed=2, gamma=0.9, lr=0.1
+2026-03-15 16:17:19 | INFO | Running Random Agent baseline
+2026-03-15 16:17:20 | INFO | Running REINFORCE
+2026-03-15 16:24:09 | INFO | Running DQN
+2026-03-15 16:28:39 | INFO | Running experiments for seed=2, gamma=0.9, lr=0.01
+2026-03-15 16:28:39 | INFO | Running Random Agent baseline
+2026-03-15 16:28:40 | INFO | Running REINFORCE
+2026-03-15 16:35:36 | INFO | Running DQN
+2026-03-15 16:40:13 | INFO | Running experiments for seed=2, gamma=0.9, lr=0.001
+2026-03-15 16:40:13 | INFO | Running Random Agent baseline
+2026-03-15 16:40:14 | INFO | Running REINFORCE
+2026-03-15 16:47:17 | INFO | Running DQN
+2026-03-15 16:52:54 | INFO | Running experiments for seed=2, gamma=0.99, lr=0.1
+2026-03-15 16:52:54 | INFO | Running Random Agent baseline
+2026-03-15 16:52:55 | INFO | Running REINFORCE
+2026-03-15 16:59:57 | INFO | Running DQN
+2026-03-15 17:07:26 | INFO | Running experiments for seed=2, gamma=0.99, lr=0.01
+2026-03-15 17:07:26 | INFO | Running Random Agent baseline
+2026-03-15 17:07:27 | INFO | Running REINFORCE
+2026-03-15 17:14:35 | INFO | Running DQN
+2026-03-15 17:20:22 | INFO | Running experiments for seed=2, gamma=0.99, lr=0.001
+2026-03-15 17:20:22 | INFO | Running Random Agent baseline
+2026-03-15 17:20:23 | INFO | Running REINFORCE
+2026-03-15 17:27:36 | INFO | Running DQN
+2026-03-15 17:33:24 | INFO | Running experiments for seed=3, gamma=0.9, lr=0.1
+2026-03-15 17:33:24 | INFO | Running Random Agent baseline
+2026-03-15 17:33:25 | INFO | Running REINFORCE
+2026-03-15 17:40:52 | INFO | Running DQN
+2026-03-15 17:45:34 | INFO | Running experiments for seed=3, gamma=0.9, lr=0.01
+2026-03-15 17:45:34 | INFO | Running Random Agent baseline
+2026-03-15 17:45:35 | INFO | Running REINFORCE
+2026-03-15 17:52:58 | INFO | Running DQN
+2026-03-15 17:57:51 | INFO | Running experiments for seed=3, gamma=0.9, lr=0.001
+2026-03-15 17:57:51 | INFO | Running Random Agent baseline
+2026-03-15 17:57:52 | INFO | Running REINFORCE
+2026-03-15 18:05:16 | INFO | Running DQN
+2026-03-15 18:11:13 | INFO | Running experiments for seed=3, gamma=0.99, lr=0.1
+2026-03-15 18:11:13 | INFO | Running Random Agent baseline
+2026-03-15 18:11:14 | INFO | Running REINFORCE
+2026-03-15 18:18:40 | INFO | Running DQN
+2026-03-15 18:26:33 | INFO | Running experiments for seed=3, gamma=0.99, lr=0.01
+2026-03-15 18:26:33 | INFO | Running Random Agent baseline
+2026-03-15 18:26:34 | INFO | Running REINFORCE
+2026-03-15 18:34:17 | INFO | Running DQN
+2026-03-15 18:39:56 | INFO | Running experiments for seed=3, gamma=0.99, lr=0.001
+2026-03-15 18:39:56 | INFO | Running Random Agent baseline
+2026-03-15 18:39:57 | INFO | Running REINFORCE
+2026-03-15 18:47:41 | INFO | Running DQN
+2026-03-15 18:53:27 | INFO | Running experiments for seed=4, gamma=0.9, lr=0.1
+2026-03-15 18:53:27 | INFO | Running Random Agent baseline
+2026-03-15 18:53:28 | INFO | Running REINFORCE
+2026-03-15 19:01:39 | INFO | Running DQN
+2026-03-15 19:06:21 | INFO | Running experiments for seed=4, gamma=0.9, lr=0.01
+2026-03-15 19:06:21 | INFO | Running Random Agent baseline
+2026-03-15 19:06:22 | INFO | Running REINFORCE
+2026-03-15 19:14:09 | INFO | Running DQN
+2026-03-15 19:19:18 | INFO | Running experiments for seed=4, gamma=0.9, lr=0.001
+2026-03-15 19:19:18 | INFO | Running Random Agent baseline
+2026-03-15 19:19:20 | INFO | Running REINFORCE
+2026-03-15 19:27:11 | INFO | Running DQN
+2026-03-15 19:33:55 | INFO | Running experiments for seed=4, gamma=0.99, lr=0.1
+2026-03-15 19:33:55 | INFO | Running Random Agent baseline
+2026-03-15 19:33:56 | INFO | Running REINFORCE
+2026-03-15 19:41:47 | INFO | Running DQN
+2026-03-15 19:50:51 | INFO | Running experiments for seed=4, gamma=0.99, lr=0.01
+2026-03-15 19:50:51 | INFO | Running Random Agent baseline
+2026-03-15 19:50:52 | INFO | Running REINFORCE
+2026-03-15 19:58:40 | INFO | Running DQN
+2026-03-15 20:04:16 | INFO | Running experiments for seed=4, gamma=0.99, lr=0.001
+2026-03-15 20:04:16 | INFO | Running Random Agent baseline
+2026-03-15 20:04:18 | INFO | Running REINFORCE
+2026-03-15 20:12:17 | INFO | Running DQN
+2026-03-15 20:18:00 | INFO | Running experiments for seed=5, gamma=0.9, lr=0.1
+2026-03-15 20:18:00 | INFO | Running Random Agent baseline
+2026-03-15 20:18:02 | INFO | Running REINFORCE
+2026-03-15 20:25:58 | INFO | Running DQN
+2026-03-15 20:30:40 | INFO | Running experiments for seed=5, gamma=0.9, lr=0.01
+2026-03-15 20:30:40 | INFO | Running Random Agent baseline
+2026-03-15 20:30:41 | INFO | Running REINFORCE
+2026-03-15 20:38:33 | INFO | Running DQN
+2026-03-15 20:43:30 | INFO | Running experiments for seed=5, gamma=0.9, lr=0.001
+2026-03-15 20:43:30 | INFO | Running Random Agent baseline
+2026-03-15 20:43:31 | INFO | Running REINFORCE
+2026-03-15 20:51:28 | INFO | Running DQN
+2026-03-15 20:57:06 | INFO | Running experiments for seed=5, gamma=0.99, lr=0.1
+2026-03-15 20:57:06 | INFO | Running Random Agent baseline
+2026-03-15 20:57:07 | INFO | Running REINFORCE
+2026-03-15 21:04:58 | INFO | Running DQN
+2026-03-15 21:15:27 | INFO | Running experiments for seed=5, gamma=0.99, lr=0.01
+2026-03-15 21:15:27 | INFO | Running Random Agent baseline
+2026-03-15 21:15:28 | INFO | Running REINFORCE
+2026-03-15 21:23:28 | INFO | Running DQN
+2026-03-15 21:29:27 | INFO | Running experiments for seed=5, gamma=0.99, lr=0.001
+2026-03-15 21:29:27 | INFO | Running Random Agent baseline
+2026-03-15 21:29:28 | INFO | Running REINFORCE
+2026-03-15 21:37:24 | INFO | Running DQN
+2026-03-15 21:43:05 | INFO | Running experiments for seed=6, gamma=0.9, lr=0.1
+2026-03-15 21:43:05 | INFO | Running Random Agent baseline
+2026-03-15 21:43:06 | INFO | Running REINFORCE
+2026-03-15 21:50:54 | INFO | Running DQN
+2026-03-15 21:55:35 | INFO | Running experiments for seed=6, gamma=0.9, lr=0.01
+2026-03-15 21:55:35 | INFO | Running Random Agent baseline
+2026-03-15 21:55:36 | INFO | Running REINFORCE
+2026-03-15 22:03:26 | INFO | Running DQN
+2026-03-15 22:08:25 | INFO | Running experiments for seed=6, gamma=0.9, lr=0.001
+2026-03-15 22:08:25 | INFO | Running Random Agent baseline
+2026-03-15 22:08:26 | INFO | Running REINFORCE
+2026-03-15 22:16:32 | INFO | Running DQN
+2026-03-15 22:22:23 | INFO | Running experiments for seed=6, gamma=0.99, lr=0.1
+2026-03-15 22:22:23 | INFO | Running Random Agent baseline
+2026-03-15 22:22:24 | INFO | Running REINFORCE
+2026-03-15 22:30:27 | INFO | Running DQN
+2026-03-15 22:40:08 | INFO | Running experiments for seed=6, gamma=0.99, lr=0.01
+2026-03-15 22:40:08 | INFO | Running Random Agent baseline
+2026-03-15 22:40:10 | INFO | Running REINFORCE
+2026-03-15 22:48:07 | INFO | Running DQN

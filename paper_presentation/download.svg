@@ -1,0 +1,156 @@
+<svg width="1400" height="840" viewBox="0 0 1400 840" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .title { font: 700 28px Arial, sans-serif; fill: #111; }
+      .subtitle { font: 600 18px Arial, sans-serif; fill: #222; }
+      .label { font: 600 16px Arial, sans-serif; fill: #222; }
+      .small { font: 14px Arial, sans-serif; fill: #333; }
+      .tiny { font: 12px Arial, sans-serif; fill: #444; }
+      .box { fill: #f7f9fc; stroke: #2d3a4a; stroke-width: 2; rx: 14; ry: 14; }
+      .inputBox { fill: #eef6ff; stroke: #3568a8; stroke-width: 2; rx: 12; ry: 12; }
+      .frozenBox { fill: #f3f0ff; stroke: #6c4ccf; stroke-width: 2; rx: 12; ry: 12; }
+      .latentBox { fill: #ecfff4; stroke: #1f8a5b; stroke-width: 2; rx: 12; ry: 12; }
+      .predBox { fill: #fff7ea; stroke: #c67a00; stroke-width: 2; rx: 12; ry: 12; }
+      .lossBox { fill: #fff0f0; stroke: #b94a48; stroke-width: 2; rx: 12; ry: 12; }
+      .envBox { fill: #f0fbff; stroke: #1885a1; stroke-width: 2; rx: 16; ry: 16; }
+      .arrow { stroke: #334155; stroke-width: 2.5; fill: none; marker-end: url(#arrowhead); }
+      .dashed { stroke-dasharray: 8 6; }
+      .feedback { stroke: #9b1c1c; stroke-width: 2.5; fill: none; marker-end: url(#arrowheadRed); }
+      .loop { stroke: #1d4ed8; stroke-width: 2.5; fill: none; marker-end: url(#arrowheadBlue); }
+    </style>
+
+    <marker id="arrowhead" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#334155"></path>
+    </marker>
+
+    <marker id="arrowheadRed" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#9b1c1c"></path>
+    </marker>
+
+    <marker id="arrowheadBlue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#1d4ed8"></path>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="700" y="42" text-anchor="middle" class="title">Newt: Multitask World Model for Continuous Control</text>
+  <text x="700" y="70" text-anchor="middle" class="small">
+    Simplified Figure 6-style SVG for presentation slides
+  </text>
+
+  <!-- Left: Environment -->
+  <rect x="60" y="130" width="250" height="220" class="envBox"></rect>
+  <text x="185" y="165" text-anchor="middle" class="subtitle">Multitask Environment</text>
+  <text x="185" y="195" text-anchor="middle" class="small">Collects trajectories from many tasks</text>
+
+  <rect x="90" y="220" width="190" height="38" class="inputBox"></rect>
+  <text x="185" y="244" text-anchor="middle" class="label">State Observation</text>
+
+  <rect x="90" y="270" width="190" height="38" class="inputBox"></rect>
+  <text x="185" y="294" text-anchor="middle" class="label">RGB Observation</text>
+
+  <rect x="90" y="320" width="190" height="38" class="inputBox"></rect>
+  <text x="185" y="344" text-anchor="middle" class="label">Language Instruction</text>
+
+  <!-- Replay buffer -->
+  <rect x="60" y="430" width="250" height="110" class="box"></rect>
+  <text x="185" y="465" text-anchor="middle" class="subtitle">Replay Buffer B</text>
+  <text x="185" y="492" text-anchor="middle" class="small">Stores trajectories τ ~ B</text>
+  <text x="185" y="517" text-anchor="middle" class="small">used for world-model updates</text>
+
+  <!-- Encoders -->
+  <rect x="390" y="120" width="210" height="80" class="frozenBox"></rect>
+  <text x="495" y="150" text-anchor="middle" class="subtitle">CLIP Text Encoder</text>
+  <text x="495" y="175" text-anchor="middle" class="small">g = CLIPtext(s_lang)</text>
+  <text x="495" y="193" text-anchor="middle" class="tiny">frozen, cached embeddings</text>
+
+  <rect x="390" y="230" width="210" height="80" class="frozenBox"></rect>
+  <text x="495" y="260" text-anchor="middle" class="subtitle">DINOv2 Image Encoder</text>
+  <text x="495" y="285" text-anchor="middle" class="small">x = DINOv2(s_img)</text>
+  <text x="495" y="303" text-anchor="middle" class="tiny">frozen, optional RGB path</text>
+
+  <rect x="390" y="340" width="210" height="90" class="latentBox"></rect>
+  <text x="495" y="372" text-anchor="middle" class="subtitle">State Encoder</text>
+  <text x="495" y="398" text-anchor="middle" class="small">z = h(s_state, x, g)</text>
+  <text x="495" y="418" text-anchor="middle" class="tiny">concatenate modalities → latent state</text>
+
+  <!-- World model core -->
+  <rect x="700" y="105" width="250" height="105" class="latentBox"></rect>
+  <text x="825" y="138" text-anchor="middle" class="subtitle">Latent Dynamics</text>
+  <text x="825" y="165" text-anchor="middle" class="small">z′ = d(z, a, g)</text>
+  <text x="825" y="190" text-anchor="middle" class="tiny">predict next latent state</text>
+
+  <rect x="700" y="235" width="250" height="90" class="predBox"></rect>
+  <text x="825" y="267" text-anchor="middle" class="subtitle">Reward Predictor</text>
+  <text x="825" y="292" text-anchor="middle" class="small">r̂ = R(z, a, g)</text>
+
+  <rect x="700" y="350" width="250" height="90" class="predBox"></rect>
+  <text x="825" y="382" text-anchor="middle" class="subtitle">Value Predictor</text>
+  <text x="825" y="407" text-anchor="middle" class="small">q̂ = Q(z, a, g)</text>
+
+  <rect x="700" y="465" width="250" height="95" class="predBox"></rect>
+  <text x="825" y="497" text-anchor="middle" class="subtitle">Policy Prior</text>
+  <text x="825" y="522" text-anchor="middle" class="small">â = p(z, g)</text>
+  <text x="825" y="542" text-anchor="middle" class="tiny">guides action selection</text>
+
+  <!-- Planning -->
+  <rect x="1040" y="245" width="240" height="110" class="box"></rect>
+  <text x="1160" y="280" text-anchor="middle" class="subtitle">Planner</text>
+  <text x="1160" y="308" text-anchor="middle" class="small">Trajectory optimization</text>
+  <text x="1160" y="330" text-anchor="middle" class="small">in latent space</text>
+
+  <rect x="1085" y="390" width="150" height="55" class="inputBox"></rect>
+  <text x="1160" y="424" text-anchor="middle" class="label">Action a</text>
+
+  <!-- Loss -->
+  <rect x="690" y="620" width="600" height="150" class="lossBox"></rect>
+  <text x="990" y="652" text-anchor="middle" class="subtitle">Training Objective</text>
+  <text x="735" y="688" class="label">Self-prediction:</text>
+  <text x="885" y="688" class="small">|| z′<tspan baseline-shift="sub" font-size="11">t</tspan> − sg(h(s′<tspan baseline-shift="sub" font-size="11">state,t</tspan>, x′<tspan baseline-shift="sub" font-size="11">t</tspan>, g)) ||²</text>
+
+  <text x="735" y="718" class="label">Reward loss:</text>
+  <text x="850" y="718" class="small">ℓ<tspan baseline-shift="sub" font-size="11">CE</tspan>(r̂<tspan baseline-shift="sub" font-size="11">t</tspan>, r<tspan baseline-shift="sub" font-size="11">t</tspan>)</text>
+
+  <text x="735" y="748" class="label">Value loss:</text>
+  <text x="840" y="748" class="small">ℓ<tspan baseline-shift="sub" font-size="11">CE</tspan>(q̂<tspan baseline-shift="sub" font-size="11">t</tspan>, q<tspan baseline-shift="sub" font-size="11">t</tspan>)</text>
+
+  <text x="1060" y="718" class="small">L(θ) = E<tspan baseline-shift="sub" font-size="11">τ~B</tspan>[ Σ λ<tspan baseline-shift="super" font-size="11">t</tspan>( self + reward + value ) ]</text>
+
+  <!-- Data flow arrows -->
+  <path d="M 310 239 L 390 385" class="arrow"></path>
+  <path d="M 310 289 L 390 270" class="arrow"></path>
+  <path d="M 310 339 L 390 160" class="arrow"></path>
+
+  <path d="M 600 385 L 700 158" class="arrow"></path>
+  <path d="M 600 385 L 700 280" class="arrow"></path>
+  <path d="M 600 385 L 700 395" class="arrow"></path>
+  <path d="M 600 385 L 700 512" class="arrow"></path>
+
+  <path d="M 950 512 L 1040 300" class="arrow dashed"></path>
+  <path d="M 950 395 L 1040 300" class="arrow dashed"></path>
+  <path d="M 950 280 L 1040 300" class="arrow dashed"></path>
+
+  <path d="M 1160 355 L 1160 390" class="arrow"></path>
+  <path d="M 1085 418 L 310 418 L 310 368 L 185 368" class="loop"></path>
+
+  <!-- Replay / optimization arrows -->
+  <path d="M 185 350 L 185 430" class="feedback"></path>
+  <path d="M 310 485 L 650 485 L 650 675 L 690 675" class="arrow"></path>
+  <path d="M 990 620 L 990 570 L 825 570 L 825 560" class="feedback"></path>
+  <path d="M 930 675 L 600 675 L 600 385" class="feedback"></path>
+
+  <!-- Legend -->
+  <rect x="1060" y="95" width="260" height="120" class="box"></rect>
+  <text x="1190" y="125" text-anchor="middle" class="subtitle">Legend</text>
+  <rect x="1080" y="140" width="22" height="18" class="frozenBox"></rect>
+  <text x="1112" y="154" class="small">Frozen pretrained encoder</text>
+  <rect x="1080" y="168" width="22" height="18" class="latentBox"></rect>
+  <text x="1112" y="182" class="small">Learned latent/world model</text>
+  <rect x="1080" y="196" width="22" height="18" class="predBox"></rect>
+  <text x="1112" y="210" class="small">Prediction / planning component</text>
+
+  <!-- Footer notes -->
+  <text x="60" y="800" class="tiny">
+    Notes: CLIP and DINOv2 are frozen; other modules are MLPs. Planning uses latent dynamics, reward, value, and policy prior.
+  </text>
+</svg>

@@ -1,0 +1,46 @@
+<svg width="1000" height="520" viewBox="0 0 1000 520" xmlns="http://www.w3.org/2000/svg">
+
+<style>
+.box{fill:#ecfdf5;stroke:#059669;stroke-width:2;rx:14}
+.title{font:700 18px Arial}
+.txt{font:14px Arial}
+.arrow{stroke:#111827;stroke-width:2;marker-end:url(#arrow)}
+</style>
+
+<defs>
+<marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+<path d="M0,0 L10,5 L0,10 Z" fill="#111827"></path>
+</marker>
+</defs>
+
+<text x="380" y="35" class="title">Newt Pipeline — Steps 5–7</text>
+
+<!-- Planning -->
+<rect x="120" y="180" width="200" height="110" class="box"></rect>
+<text x="150" y="210" class="txt">Step 5</text>
+<text x="150" y="230" class="txt">Planning</text>
+<text x="150" y="250" class="txt">Trajectory</text>
+<text x="150" y="270" class="txt">Optimization</text>
+
+<!-- Environment -->
+<rect x="420" y="180" width="200" height="110" class="box"></rect>
+<text x="450" y="210" class="txt">Step 6</text>
+<text x="450" y="230" class="txt">Environment</text>
+<text x="450" y="250" class="txt">Interaction</text>
+
+<!-- Replay Buffers -->
+<rect x="720" y="120" width="200" height="90" class="box"></rect>
+<text x="750" y="150" class="txt">Demo Buffer</text>
+
+<rect x="720" y="260" width="200" height="90" class="box"></rect>
+<text x="750" y="290" class="txt">Online Buffer</text>
+
+<text x="720" y="380" class="txt">Step 7</text>
+<text x="720" y="400" class="txt">50% sampling</text>
+
+<!-- Arrows -->
+<line x1="320" y1="235" x2="420" y2="235" class="arrow"></line>
+<line x1="620" y1="235" x2="720" y2="165" class="arrow"></line>
+<line x1="620" y1="235" x2="720" y2="305" class="arrow"></line>
+
+</svg>

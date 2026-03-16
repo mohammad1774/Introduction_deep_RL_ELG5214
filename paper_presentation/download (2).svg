@@ -1,0 +1,62 @@
+<svg width="1000" height="520" viewBox="0 0 1000 520" xmlns="http://www.w3.org/2000/svg">
+
+<style>
+.box{fill:#eef2ff;stroke:#4f46e5;stroke-width:2;rx:14}
+.title{font:700 18px Arial}
+.txt{font:14px Arial}
+.arrow{stroke:#111827;stroke-width:2;marker-end:url(#arrow)}
+</style>
+
+<defs>
+<marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+<path d="M0,0 L10,5 L0,10 Z" fill="#111827"></path>
+</marker>
+</defs>
+
+<text x="380" y="35" class="title">Newt Pipeline — Steps 1–4</text>
+
+<!-- Step 1 -->
+<rect x="60" y="120" width="180" height="90" class="box"></rect>
+<text x="85" y="150" class="txt">Step 1</text>
+<text x="85" y="170" class="txt">Demonstrations</text>
+<text x="85" y="190" class="txt">(s, a, r)</text>
+
+<!-- Step 2 -->
+<rect x="300" y="120" width="200" height="90" class="box"></rect>
+<text x="330" y="150" class="txt">Step 2</text>
+<text x="330" y="170" class="txt">Model-Based</text>
+<text x="330" y="190" class="txt">Pretraining</text>
+
+<!-- Step 3 -->
+<rect x="560" y="70" width="200" height="90" class="box"></rect>
+<text x="585" y="100" class="txt">Step 3</text>
+<text x="585" y="120" class="txt">Language Encoder</text>
+<text x="585" y="140" class="txt">CLIP</text>
+
+<rect x="560" y="190" width="200" height="90" class="box"></rect>
+<text x="585" y="220" class="txt">Image Encoder</text>
+<text x="585" y="240" class="txt">DINOv2</text>
+
+<rect x="560" y="310" width="200" height="90" class="box"></rect>
+<text x="585" y="340" class="txt">State Encoder</text>
+<text x="585" y="360" class="txt">z = h(s,x,g)</text>
+
+<!-- Step 4 -->
+<rect x="820" y="170" width="160" height="120" class="box"></rect>
+<text x="845" y="200" class="txt">Step 4</text>
+<text x="845" y="220" class="txt">World Model</text>
+<text x="845" y="240" class="txt">Dynamics</text>
+<text x="845" y="260" class="txt">Reward</text>
+<text x="845" y="280" class="txt">Value</text>
+
+<!-- Arrows -->
+<line x1="240" y1="165" x2="300" y2="165" class="arrow"></line>
+<line x1="500" y1="165" x2="560" y2="115" class="arrow"></line>
+<line x1="500" y1="165" x2="560" y2="235" class="arrow"></line>
+<line x1="500" y1="165" x2="560" y2="355" class="arrow"></line>
+
+<line x1="760" y1="115" x2="820" y2="215" class="arrow"></line>
+<line x1="760" y1="235" x2="820" y2="215" class="arrow"></line>
+<line x1="760" y1="355" x2="820" y2="215" class="arrow"></line>
+
+</svg>
