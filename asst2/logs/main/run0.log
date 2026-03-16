@@ -1,6 +1,0 @@
-2026-03-15 02:08:40 | INFO | Starting Assignment 2 main run
-2026-03-15 02:08:40 | INFO | JAX devices: [CudaDevice(id=0)]
-2026-03-15 02:08:40 | INFO | Running experiments for seed=1, gamma=0.9, lr=0.1
-2026-03-15 02:08:40 | INFO | Running Random Agent baseline
-2026-03-15 02:08:43 | INFO | Running REINFORCE
-2026-03-15 02:12:21 | INFO | Running DQN
