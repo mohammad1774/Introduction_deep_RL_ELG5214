@@ -1,2 +1,13 @@
 **/.venv/
 **/dl_env/paper_presentation/PDFAnnotatorSetup.exe
+# Python virtual environments
+dl_env/
+.venv/
+venv/
+**/dl_env/
+**/.venv/
+**/venv/
+
+# Python cache
+__pycache__/
+*.pyc

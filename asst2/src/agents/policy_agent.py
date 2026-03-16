@@ -47,20 +47,3 @@ class PolicyAgent:
     def update_params(self, new_params: dict)-> None:
         self.params = new_params
 
-def compute_returns(rewards, gamma=0.99):
-    G = 0.0
-    returns = []
-
-    for r in rewards[::-1]:
-        G = r + gamma * G
-        returns.append(G) 
-    
-    returns = returns[::-1]
-    return jnp.array(returns, dtype=jnp.float32)
-
-def reinforce_loss(params, observations, actions, returns):
-    def step_loss(obs, act, G):
-        logp = log_prob(params, obs, act)
-        return -logp * G 
-    losses = jax.vmap(step_loss)(observations, actions, returns)
-    return jnp.mean(losses)
