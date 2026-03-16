@@ -214,7 +214,7 @@ def train_dqn(
 
         # ── 4. Gradient updates — accumulate loss on GPU ──
         total_loss = jnp.array(0.0)
-        n_updates = 0
+        n_updates = 4
 
         if int(buffer["size"]) >= max(warmup_steps, batch_size):
             n_updates = max(1, n_valid)
